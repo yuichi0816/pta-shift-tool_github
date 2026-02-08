@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>地域別利用状況（月別）</title>
+
+  <style>
+    :root {
+      --bg: #f7f9fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #2563eb;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 4px;
+    }
+
+    .sub {
+      color: var(--muted);
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    input[type="month"] {
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    a.csv {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-left: auto;
+    }
+
+    .total {
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .charts {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .chart-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .chart-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .chart-note {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+    }
+
+    .chart-scroll {
+      overflow-x: auto;
+    }
+
+    canvas.chart {
+      display: block;
+      width: 100%;
+      height: 260px;
+    }
+
+    .region-link {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--accent);
+      text-decoration: underline;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 0.85rem;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      padding: 8px;
+    }
+
+    tbody td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .error {
+      color: #b91c1c;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>地域別利用状況</h1>
+    <div class="sub">アクセス元（推定）の都道府県別・月別集計</div>
+
+    <div class="card">
+      <div class="actions">
+        <input type="month" id="month" />
+        <button id="reload">更新</button>
+        <button id="reset" type="button">カウントをリセット</button>
+        <a id="csv" class="csv" href="#">CSVダウンロード</a>
+      </div>
+
+      <div id="total" class="total"></div>
+
+      <div class="charts">
+        <div class="chart-card">
+          <div class="chart-title">地域別アクセス数（合計）</div>
+          <div class="chart-note">横軸: 地域 / 縦軸: アクセス数</div>
+          <div class="chart-scroll">
+            <canvas id="regionChart" class="chart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-title" id="detailTitle">地域別の日別推移</div>
+          <div class="chart-note">地域名をクリックすると、その地域だけの日別グラフを表示します。</div>
+          <div class="chart-scroll">
+            <canvas id="detailChart" class="chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>区分</th>
+            <th>地域</th>
+            <th>件数</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+
+      <div id="error" class="error"></div>
+    </div>
+  </div>
+
+  <script>
+    // JSTで今月を YYYY-MM 形式で入れる
+    function thisMonthJST() {
+      return new Date().toLocaleDateString("sv-SE", {
+        timeZone: "Asia/Tokyo"
+      }).slice(0, 7);
+    }
+
+    function buildMonthDays(month) {
+      if (!/^\d{4}-\d{2}$/.test(month)) return [];
+      const [year, monthNum] = month.split("-").map(Number);
+      const lastDay = new Date(year, monthNum, 0).getDate();
+      const days = [];
+      for (let d = 1; d <= lastDay; d += 1) {
+        days.push(`${month}-${String(d).padStart(2, "0")}`);
+      }
+      return days;
+    }
+
+    let csvUrl = null;
+    let dailyRegionMap = new Map();
+    let lastRegionChart = null;
+    let lastDetailChart = null;
+    let lastDays = [];
+
+    function resizeCanvas(canvas, desiredWidth) {
+      const ratio = window.devicePixelRatio || 1;
+      const width = Math.max(320, desiredWidth);
+      const height = 260;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      canvas.width = Math.floor(width * ratio);
+      canvas.height = Math.floor(height * ratio);
+      return { width, height, ratio };
+    }
+
+    function drawBarChart(canvas, labels, values, options) {
+      if (!canvas) return;
+      let barWidth = options?.barWidth || 40;
+      let gap = options?.gap || 16;
+      const leftPad = 48;
+      const rightPad = 16;
+      const topPad = 16;
+      const bottomPad = 46;
+      const containerWidth = canvas.parentElement?.clientWidth || 640;
+      const desiredWidth = containerWidth;
+      const { width, height, ratio } = resizeCanvas(canvas, desiredWidth);
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+
+      const maxValue = Math.max(0, ...values);
+      const chartHeight = height - topPad - bottomPad;
+      const chartWidth = width - leftPad - rightPad;
+
+      if (options?.autoFit) {
+        const count = Math.max(1, labels.length);
+        const per = chartWidth / count;
+        const maxBar = options?.maxBar ?? 40;
+        const minBar = options?.minBar ?? 4;
+        if (per >= minBar + 4) {
+          barWidth = Math.min(maxBar, per * 0.7);
+        } else {
+          barWidth = Math.max(1, per * 0.85);
+        }
+        barWidth = Math.min(barWidth, per);
+        gap = Math.max(0, per - barWidth);
+      }
+      const baseY = topPad + chartHeight;
+      const scale = maxValue === 0 ? 0 : chartHeight / maxValue;
+
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(leftPad, baseY);
+      ctx.lineTo(leftPad + chartWidth, baseY);
+      ctx.stroke();
+
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "12px system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      for (let i = 0; i <= 4; i += 1) {
+        const val = Math.round((maxValue / 4) * i);
+        const y = baseY - (scale * val);
+        ctx.fillText(String(val), leftPad - 6, y);
+        ctx.strokeStyle = "#f1f5f9";
+        ctx.beginPath();
+        ctx.moveTo(leftPad, y);
+        ctx.lineTo(leftPad + chartWidth, y);
+        ctx.stroke();
+      }
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+
+      labels.forEach((label, idx) => {
+        const value = values[idx] || 0;
+        const x = leftPad + idx * (barWidth + gap) + gap / 2;
+        const barHeight = scale * value;
+        const y = baseY - barHeight;
+        ctx.fillStyle = options?.colors?.[idx] || "#2563eb";
+        ctx.fillRect(x, y, barWidth, barHeight);
+
+        ctx.save();
+        ctx.translate(x + barWidth / 2, baseY + 6);
+        ctx.rotate(-Math.PI / 6);
+        ctx.fillStyle = "#111827";
+        ctx.fillText(label, 0, 0);
+        ctx.restore();
+      });
+    }
+
+    function updateDetailChart(regionKey, displayLabel) {
+      const detailTitle = document.getElementById("detailTitle");
+      const entry = dailyRegionMap.get(regionKey);
+      if (!entry) {
+        detailTitle.textContent = "地域別の日別推移";
+        lastDetailChart = null;
+        drawBarChart(document.getElementById("detailChart"), [], [], { barWidth: 26, gap: 8 });
+        return;
+      }
+      detailTitle.textContent = `日別推移：${displayLabel}`;
+      const dayLabels = lastDays.map((d) => d.split("-")[2]);
+      lastDetailChart = { labels: dayLabels, values: entry.counts };
+      drawBarChart(document.getElementById("detailChart"), dayLabels, entry.counts, {
+        barWidth: 26,
+        gap: 10,
+        colors: dayLabels.map(() => "#16a34a"),
+        autoFit: true,
+        minBar: 2,
+        maxBar: 30
+      });
+    }
+
+    async function load() {
+      const month = document.getElementById("month").value;
+      const tbody = document.getElementById("tbody");
+      const totalEl = document.getElementById("total");
+      const errorEl = document.getElementById("error");
+      const csvEl = document.getElementById("csv");
+
+      tbody.innerHTML = "";
+      totalEl.textContent = "";
+      errorEl.textContent = "";
+      if (csvUrl) {
+        URL.revokeObjectURL(csvUrl);
+        csvUrl = null;
+      }
+      csvEl.removeAttribute("download");
+      csvEl.href = "#";
+
+      if (!month) {
+        errorEl.textContent = "月を選択してください。";
+        return;
+      }
+
+      try {
+        const days = buildMonthDays(month);
+        if (days.length === 0) {
+          errorEl.textContent = "月を選択してください。";
+          return;
+        }
+
+        lastDays = days;
+        dailyRegionMap = new Map();
+
+        const dataList = await Promise.all(days.map(async (day) => {
+          const res = await fetch(`/api/region-stats?day=${day}`, {
+            cache: "no-store"
+          });
+          if (!res.ok) {
+            throw new Error(`データ取得に失敗しました（${day}）`);
+          }
+          return res.json();
+        }));
+        
+        // 国内は都道府県ごと、海外は国ごとに集計
+        const domesticMap = new Map();  // 国内（都道府県別）
+        const overseasMap = new Map();  // 海外（国別）
+        let total = 0;
+
+        dataList.forEach((data, dayIndex) => {
+          total += Number(data.total) || 0;
+
+          const dayDomesticMap = new Map();
+          const dayOverseasMap = new Map();
+
+          for (const r of data.rows) {
+            const isJP = (r.country === "JP");
+            
+            if (isJP) {
+              const prefName = r.displayRegion || r.region;
+              const prev = dayDomesticMap.get(prefName) || 0;
+              dayDomesticMap.set(prefName, prev + (Number(r.count) || 0));
+            } else {
+              const countryName = r.countryName || r.country;
+              const prev = dayOverseasMap.get(countryName) || 0;
+              dayOverseasMap.set(countryName, prev + (Number(r.count) || 0));
+            }
+          }
+
+          for (const [prefName, count] of dayDomesticMap.entries()) {
+            const prev = domesticMap.get(prefName) || { displayType: "国内", displayRegion: prefName, count: 0 };
+            prev.count += count;
+            domesticMap.set(prefName, prev);
+
+            const key = `国内::${prefName}`;
+            const entry = dailyRegionMap.get(key) || {
+              displayType: "国内",
+              displayRegion: prefName,
+              counts: Array(days.length).fill(0)
+            };
+            entry.counts[dayIndex] += count;
+            dailyRegionMap.set(key, entry);
+          }
+
+          for (const [countryName, count] of dayOverseasMap.entries()) {
+            const prev = overseasMap.get(countryName) || { displayType: "海外", displayRegion: countryName, count: 0 };
+            prev.count += count;
+            overseasMap.set(countryName, prev);
+
+            const key = `海外::${countryName}`;
+            const entry = dailyRegionMap.get(key) || {
+              displayType: "海外",
+              displayRegion: countryName,
+              counts: Array(days.length).fill(0)
+            };
+            entry.counts[dayIndex] += count;
+            dailyRegionMap.set(key, entry);
+          }
+        });
+
+        // 国内と海外を統合してソート
+        const allRows = [
+          ...Array.from(domesticMap.values()),
+          ...Array.from(overseasMap.values())
+        ].sort((a, b) => b.count - a.count);
+
+        totalEl.textContent = `総アクセス数（${days[0]}〜${days[days.length - 1]}）：${total}`;
+
+        // 国内合計と海外合計を計算
+        const domesticTotal = Array.from(domesticMap.values()).reduce((sum, r) => sum + r.count, 0);
+        const overseasTotal = Array.from(overseasMap.values()).reduce((sum, r) => sum + r.count, 0);
+        
+        // サマリー行を追加
+        if (domesticTotal > 0 || overseasTotal > 0) {
+          const summaryRow = document.createElement("tr");
+          summaryRow.style.backgroundColor = "#f0f9ff";
+          summaryRow.style.fontWeight = "bold";
+          summaryRow.innerHTML = `
+            <td colspan="2">📊 サマリー: 国内 ${domesticTotal}件 / 海外 ${overseasTotal}件</td>
+            <td>${domesticTotal + overseasTotal}</td>
+          `;
+          tbody.appendChild(summaryRow);
+        }
+
+        for (const r of allRows) {
+          const tr = document.createElement("tr");
+          const typeIcon = r.displayType === "国内" ? "🇯🇵" : "🌍";
+          const regionKey = `${r.displayType}::${r.displayRegion}`;
+          tr.innerHTML = `
+            <td>${typeIcon} ${r.displayType}</td>
+            <td><button type="button" class="region-link" data-region="${regionKey}">${r.displayRegion}</button></td>
+            <td>${r.count}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+
+        const regionLabels = allRows.map((r) => r.displayRegion);
+        const regionValues = allRows.map((r) => r.count);
+        const regionColors = allRows.map((r) => (r.displayType === "国内" ? "#2563eb" : "#f59e0b"));
+        lastRegionChart = { labels: regionLabels, values: regionValues, colors: regionColors };
+        drawBarChart(document.getElementById("regionChart"), regionLabels, regionValues, {
+          barWidth: 40,
+          gap: 18,
+          colors: regionColors,
+          autoFit: true,
+          minBar: 4,
+          maxBar: 36
+        });
+
+        if (allRows.length > 0) {
+          const firstKey = `${allRows[0].displayType}::${allRows[0].displayRegion}`;
+          const firstLabel = `${allRows[0].displayRegion}`;
+          updateDetailChart(firstKey, firstLabel);
+        } else {
+          updateDetailChart("", "");
+        }
+
+        const csvRows = [
+          ["month", "区分", "地域", "件数"],
+          ...allRows.map((r) => [month, r.displayType, r.displayRegion, r.count]),
+          ["month_total", "国内合計", "", domesticTotal],
+          ["month_total", "海外合計", "", overseasTotal],
+          ["month_total", "総合計", "", domesticTotal + overseasTotal],
+        ];
+
+        const csv = csvRows
+          .map((row) => row.map((v) => `"${String(v).replaceAll(`"`, `""`)}"`).join(","))
+          .join("\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        csvUrl = URL.createObjectURL(blob);
+        csvEl.href = csvUrl;
+        csvEl.download = `region-stats-${month}.csv`;
+      } catch (e) {
+        errorEl.textContent = e.message;
+      }
+    }
+
+    document.getElementById("reload").addEventListener("click", load);
+    document.getElementById("tbody").addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const button = target.closest(".region-link");
+      if (!button) return;
+      const regionKey = button.getAttribute("data-region");
+      const label = button.textContent || "地域";
+      if (regionKey) {
+        updateDetailChart(regionKey, label);
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (lastRegionChart) {
+        drawBarChart(
+          document.getElementById("regionChart"),
+          lastRegionChart.labels,
+          lastRegionChart.values,
+          { barWidth: 40, gap: 18, colors: lastRegionChart.colors, autoFit: true, minBar: 4, maxBar: 36 }
+        );
+      }
+      if (lastDetailChart) {
+        drawBarChart(
+          document.getElementById("detailChart"),
+          lastDetailChart.labels,
+          lastDetailChart.values,
+          { barWidth: 26, gap: 10, colors: lastDetailChart.labels.map(() => "#16a34a"), autoFit: true, minBar: 2, maxBar: 30 }
+        );
+      }
+    });
+
+    // 初期表示
+    document.getElementById("month").value = thisMonthJST();
+    load();
+
+    document.getElementById("reset").addEventListener("click", async () => {
+      const ok = confirm("全期間のカウントを削除します。よろしいですか？");
+      if (!ok) return;
+
+      const token = prompt("リセット合言葉を入力してください");
+      if (!token) return;
+
+      try {
+        const res = await fetch(`/api/region-reset?token=${encodeURIComponent(token)}`, {
+          method: "POST",
+          cache: "no-store"
+        });
+        if (!res.ok) throw new Error("リセットに失敗しました（合言葉が違う可能性）");
+
+        alert("リセットしました");
+        load(); // 画面更新
+      } catch (e) {
+        alert(e.message);
+      }
+    });
+
+  </script>
+</body>
+
+</html>

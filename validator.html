@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTA旗振りデータ検証ツール</title>
+    <meta name="description" content="PTAの旗振り・挨拶当番のアンケートデータを検証・修正確認するツール">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚸</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <style>
+        .error-card {
+            background-color: #fef2f2;
+            border-left: 4px solid var(--color-danger);
+            padding: var(--space-md);
+            margin-bottom: var(--space-sm);
+        }
+
+        .warning-card {
+            background-color: #fffbeb;
+            border-left: 4px solid var(--color-warning);
+            padding: var(--space-md);
+            margin-bottom: var(--space-sm);
+        }
+
+        .valid-card {
+            background-color: #f0fdf4;
+            border-left: 4px solid var(--color-success);
+            padding: var(--space-md);
+            margin-bottom: var(--space-sm);
+        }
+
+        .tag-error {
+            background-color: var(--color-danger);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .tag-warning {
+            background-color: var(--color-warning);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .detail-list {
+            list-style: none;
+            margin-top: var(--space-sm);
+        }
+
+        .detail-user {
+            font-weight: bold;
+            display: inline-block;
+            width: 150px;
+        }
+
+        .detail-msg {
+            color: var(--color-text-light);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <h1 class="logo">🧹 データ検証・整形ツール</h1>
+                <p class="tagline">シフト作成前のアンケートデータチェック</p>
+                <div style="margin-top: 10px;">
+                    <a href="index.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">🏠 ホーム</a>
+                    <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+                    <a href="tool.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">🎯
+                        シフト割当て</a>
+                    <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+                    <a href="manual.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">📖
+                        マニュアル</a>
+                    <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+                    <a href="survey-sample.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">📝
+                        アンケート例</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main container">
+
+            <!-- Step 1: File Upload -->
+            <section class="card" id="uploadSection">
+                <div class="card-header">
+                    <span class="step-badge">STEP 0</span>
+                    <h2>Excel生データを読み込み</h2>
+                </div>
+                <div class="card-body">
+                    <p style="margin-bottom: 20px;">
+                        Googleフォームの回答データを読み込ませて、入力内容の不備をチェックします。<br>オプションで「旗振りシフト日と場所」ファイルも読み込ませると、日付や場所の照合も行えます。
+                    </p>
+
+                    <div class="upload-grid">
+                        <!-- Survey Data (Main Target) -->
+                        <div class="upload-box" id="surveyUploadBox">
+                            <div class="upload-icon">📋</div>
+                            <h3>アンケート回答</h3>
+                            <p>検証したいデータ</p>
+                            <input type="file" id="surveyFile" accept=".xlsx,.xls,.csv" hidden>
+                            <button class="btn btn-primary" onclick="document.getElementById('surveyFile').click()">
+                                ファイルを選択
+                            </button>
+                            <div class="file-status" id="surveyStatus"></div>
+                        </div>
+
+                        <!-- Shift Template (Reference) -->
+                        <div class="upload-box" id="shiftUploadBox">
+                            <div class="upload-icon">📅</div>
+                            <h3>旗振りシフト日と場所</h3>
+                            <p>日付と場所の正誤チェック</p>
+                            <input type="file" id="shiftFile" accept=".xlsx,.xls,.csv" hidden>
+                            <button class="btn btn-outline" onclick="document.getElementById('shiftFile').click()">
+                                ファイルを選択（任意）
+                            </button>
+                            <div class="file-status" id="shiftStatus"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 2: Validation Results -->
+            <section class="card hidden" id="resultSection">
+                <div class="card-header">
+                    <span class="step-badge">STEP 2</span>
+                    <h2>検証結果レポート</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Actions -->
+                    <div style="text-align: right; margin-bottom: 20px;">
+                        <button class="btn btn-success" id="downloadCleanBtn"
+                            style="background-color: var(--color-success); color: white;">
+                            ✨ 整形済みデータをダウンロード
+                        </button>
+                    </div>
+
+                    <!-- Summary Stats -->
+                    <div class="result-summary" id="validationSummary">
+                        <!-- Filled by JS -->
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="tabs">
+                        <button class="tab active" data-filter="all">すべて</button>
+                        <button class="tab" data-filter="error">❌ エラー (修正必須)</button>
+                        <button class="tab" data-filter="warning">⚠️ 警告 (要確認)</button>
+                    </div>
+
+                    <!-- Issues List -->
+                    <div id="issuesList" style="max-height: 600px; overflow-y: auto;">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div style="margin-bottom: 12px;">
+                <a href="contact.html"
+                    style="color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 500; font-size: 0.9rem; border-bottom: 1px dashed rgba(255,255,255,0.4);">
+                    📨 お問い合わせ
+                </a>
+            </div>
+            <p>© 2025 千葉県某小学校PTA. All rights reserved.</p>
+            <p>PTA旗振りシフト割当てツール ver.202512</p>
+        </footer>
+    </div>
+
+    <script src="js/validator.js"></script>
+</body>
+
+</html>

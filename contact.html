@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お問い合わせ - PTA旗振りシフトツール</title>
+    <meta name="description" content="PTA旗振りシフト割当てツールに関するお問い合わせ">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚸</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Google Sans', sans-serif;
+            background-color: #f0ebf8;
+            min-height: 100vh;
+            padding: 24px 16px;
+        }
+
+        .form-container {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* ナビゲーションバー */
+        .nav-bar {
+            background: white;
+            border-radius: 8px;
+            padding: 16px 24px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .nav-bar a {
+            color: #673ab7;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 0 12px;
+        }
+
+        .nav-bar a:hover {
+            text-decoration: underline;
+        }
+
+        .nav-bar span {
+            color: #ccc;
+        }
+
+        /* ヘッダーカード */
+        .form-header {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding-bottom: 24px;
+        }
+
+        .form-header-accent {
+            height: 10px;
+            background: linear-gradient(90deg, #673ab7, #9c27b0);
+        }
+
+        .form-header-content {
+            padding: 32px 24px;
+        }
+
+        .form-title {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 28px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 16px;
+        }
+
+        .form-description {
+            font-size: 15px;
+            color: #5f6368;
+            line-height: 1.8;
+            margin-bottom: 32px;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #673ab7;
+            color: white;
+            text-decoration: none;
+            padding: 12px 32px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .cta-button:hover {
+            background-color: #5e35b1;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        .note-card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .note-title {
+            font-weight: bold;
+            color: #202124;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .note-content {
+            font-size: 14px;
+            color: #5f6368;
+            line-height: 1.6;
+        }
+
+        /* フッター */
+        footer {
+            text-align: center;
+            color: white;
+            padding: 24px 16px;
+            font-size: 0.85rem;
+            background: linear-gradient(135deg, #004d2a 0%, #006837 100%);
+            width: calc(100% + 32px);
+            margin-left: -16px;
+            margin-right: -16px;
+            margin-top: 40px;
+            margin-bottom: -24px;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <!-- ナビゲーション -->
+        <div class="nav-bar">
+            <a href="index.html">🏠 ホーム</a>
+            <span>|</span>
+            <a href="tool.html">🎯 シフト割当て</a>
+            <span>|</span>
+            <a href="manual.html">📖 マニュアル</a>
+        </div>
+
+        <!-- メインカード -->
+        <div class="form-header">
+            <div class="form-header-accent"></div>
+            <div class="form-header-content">
+                <div style="font-size: 48px; margin-bottom: 16px;">📨</div>
+                <h1 class="form-title">お問い合わせ</h1>
+                <p class="form-description">
+                    PTA旗振り・挨拶当番ツールに関するご質問、不具合報告、<br>
+                    その他ご意見がございましたら、以下のフォームよりお送りください。<br>
+                    Googleフォームが新しいタブで開きます。
+                </p>
+                <a href="https://forms.gle/RhXpmVXGmJJhxT91A" target="_blank" class="cta-button">
+                    お問い合わせフォームを開く <span style="font-size: 1.2em;">↗</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 注意書き -->
+        <div class="note-card">
+            <div class="note-title">
+                <span>ℹ️</span> お願いとご注意
+            </div>
+            <div class="note-content">
+                <ul>
+                    <li>回答には数日お時間をいただく場合がございます。</li>
+                    <li>メールアドレスの入力間違いにご注意ください。</li>
+                    <li>ツールに関する技術的なご質問の場合、ご利用環境（Windows/Mac, ブラウザ等）を記載いただくとスムーズです。</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© 2025 千葉県某小学校PTA. All rights reserved.</p>
+        <p>PTA旗振りシフト割当てツール ver.202512</p>
+    </footer>
+</body>
+
+</html>

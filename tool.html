@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シフト自動割当て</title>
+    <meta name="description" content="PTAの旗振り・挨拶当番のシフトを自動で割当てるツール">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚸</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <h1 class="logo"><span style="font-size: 1.5em;">&#128696;</span> シフト自動割当て</h1>
+                <p class="tagline">アンケート結果から自動でシフトを作成</p>
+                <div style="margin-top: 10px;">
+                    <a href="index.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">🏠 ホーム</a>
+                    <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+                    <a href="validator.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">🧹
+                        データ検証</a>
+                    <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+                    <a href="manual.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">📖
+                        マニュアル</a>
+                    <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+                    <a href="survey-sample.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">📝
+                        アンケート例</a>
+                    <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+                    <a href="gas-config.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">⚙️
+                        GAS（Google Apps Script）設定</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main container">
+            <!-- Step 1: File Upload -->
+            <section class="card" id="uploadSection">
+                <div class="card-header">
+                    <span class="step-badge">STEP 1</span>
+                    <h2>データ整形済みExcelを読み込み</h2>
+                </div>
+                <div class="card-body">
+                    <div class="upload-grid">
+                        <!-- Survey Data -->
+                        <div class="upload-box" id="surveyUploadBox">
+                            <div class="upload-icon">📋</div>
+                            <h3>アンケート回答</h3>
+                            <p>保護者の希望データ</p>
+                            <input type="file" id="surveyFile" accept=".xlsx,.xls,.csv" hidden>
+                            <button class="btn btn-outline" onclick="document.getElementById('surveyFile').click()">
+                                ファイルを選択
+                            </button>
+                            <div class="file-status" id="surveyStatus"></div>
+                        </div>
+
+                        <!-- Shift Template -->
+                        <div class="upload-box" id="shiftUploadBox">
+                            <div class="upload-icon">📅</div>
+                            <h3>旗振りシフト日と場所</h3>
+                            <p>日付と場所のテンプレート</p>
+                            <input type="file" id="shiftFile" accept=".xlsx,.xls,.csv" hidden>
+                            <button class="btn btn-outline" onclick="document.getElementById('shiftFile').click()">
+                                ファイルを選択
+                            </button>
+                            <div class="file-status" id="shiftStatus"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 1.5: Survey Tag Mapping -->
+            <section class="card hidden" id="mappingSection">
+                <div class="card-header">
+                    <span class="step-badge">STEP 1.5</span>
+                    <h2>設問タグマッピング（列認識を確定）</h2>
+                </div>
+                <div class="card-body">
+                    <div id="mappingMeta" class="stats-row" style="margin-bottom: 8px;"></div>
+                    <div id="mappingConfirmStatus" class="analysis-legend"
+                        style="margin-bottom: 10px; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        マッピング状態を表示します
+                    </div>
+
+                    <p style="font-size: 0.88rem; color: #64748b; margin: 0 0 10px 0;">
+                        キーワードの曖昧判定は使わず、このタグ選択結果を列認識として使用します。必須タグが揃うまで次に進めません。
+                    </p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 10px 0;">
+                        <label style="display: inline-flex; align-items: center; gap: 6px; color: #334155; font-size: 0.9rem;">
+                            <input type="checkbox" id="showIssueOnly">
+                            未対応、重複列のみを表示
+                        </label>
+                        <span id="unmappedCountBadge"
+                            style="display:inline-block; padding:2px 10px; border-radius:999px; background:#e2e8f0; color:#334155; font-size:0.8rem; font-weight:600;">
+                            未対応 0件 / 重複 0列
+                        </span>
+                    </div>
+                    <div id="mappingSummary" class="analysis-legend"
+                        style="margin-bottom: 12px; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    </div>
+                    <div id="mappingIssueNav" class="mapping-issue-nav hidden"></div>
+                    <div id="mappingRestoreNotice" class="analysis-legend hidden"
+                        style="margin-bottom: 12px; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <div id="mappingRestoreText" style="margin-bottom: 8px; color: #334155;">前回設定を確認中...</div>
+                        <button class="btn btn-outline" id="restoreLastMappingBtn" type="button">前回設定を復元</button>
+                    </div>
+
+                    <div class="table-wrapper" style="max-height: 50vh;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="min-width: 70px;">列</th>
+                                    <th style="min-width: 260px;">ヘッダー名</th>
+                                    <th style="min-width: 260px;">サンプル値</th>
+                                    <th style="min-width: 280px;">タグ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mappingTableBody">
+                                <tr>
+                                    <td colspan="4" style="color:#64748b;">アンケートファイルを読み込むと列一覧が表示されます。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 2: Data Preview -->
+            <section class="card hidden" id="previewSection">
+                <div class="card-header">
+                    <span class="step-badge">STEP 2</span>
+                    <h2>データプレビュー</h2>
+                </div>
+                <div class="card-body">
+                    <div class="tabs">
+                        <button class="tab active" data-tab="shiftPreview">旗振りシフト日と場所</button>
+                        <button class="tab" data-tab="surveyPreview">アンケート回答</button>
+                    </div>
+                    <div class="tab-content active" id="shiftPreview">
+                        <div class="stats-row" id="shiftStats"></div>
+                        <div class="table-wrapper">
+                            <table id="shiftTable"></table>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="surveyPreview">
+                        <div class="stats-row" id="surveyStats"></div>
+                        <div class="table-wrapper">
+                            <table id="surveyTable"></table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 3: Assignment -->
+            <section class="card hidden" id="assignSection">
+                <div class="card-header">
+                    <span class="step-badge">STEP 3</span>
+                    <h2>シフト割当て</h2>
+                </div>
+                <div class="card-body">
+                    <div class="action-buttons">
+                        <!-- デフォルト表示: 推奨ロジック -->
+                        <div class="assign-intro">
+                            <p class="assign-intro-title">
+                                ⚖️ 割当てロジック: 全員最低1回保証（推奨）
+                            </p>
+                            <p class="assign-intro-desc">
+                                公平性を重視し、全員に最低1回の割当てを保証します（連続制約付き）
+                            </p>
+                        </div>
+
+                        <!-- 割当日間隔設定（常時表示） -->
+                        <div class="ng-period-row">
+                            <label for="ngPeriodDays">前後NG期間（日数）</label>
+                            <input type="number" id="ngPeriodDays" value="7" min="0" max="30"
+                                class="ng-period-input">
+                            <span class="ng-period-unit">日間</span>
+                        </div>
+                        <p class="ng-period-note">
+                            ※ 同一人物がこの日数以内に連続して割当てられることを防ぎます（0で無効化）
+                        </p>
+
+                        <!-- 詳細設定トグル -->
+                        <details id="advancedSettings">
+                            <summary>
+                                ⚙️ 詳細設定を表示（他のロジックを選択）
+                            </summary>
+                            <div class="advanced-settings-body">
+                                <!-- ロジック選択ドロップダウン -->
+                                <div class="logic-select-row">
+                                    <label for="logicSelect">割当てロジック:</label>
+                                    <select id="logicSelect">
+                                        <option value="minimum_guarantee">全員最低1回保証（推奨）</option>
+                                        <option value="participant_priority">参加者優先</option>
+                                        <option value="standard">標準</option>
+                                        <option value="date_order">日付順</option>
+                                    </select>
+                                </div>
+
+                                <!-- ロジック比較表 -->
+                                <div style="width: 100%; margin-top: 10px;">
+                                    <table
+                                        style="width: 100%; border-collapse: collapse; font-size: 0.85em; table-layout: fixed; margin: 0 auto;">
+                                        <colgroup>
+                                            <col style="width: 25%;">
+                                            <col style="width: 22%;">
+                                            <col style="width: 53%;">
+                                        </colgroup>
+                                        <thead>
+                                            <tr style="background: #e8f5e9; color: #333; font-weight: bold;">
+                                                <th style="padding: 10px; text-align: center; border: 1px solid #ccc;">
+                                                    ロジック</th>
+                                                <th style="padding: 10px; text-align: center; border: 1px solid #ccc;">
+                                                    重視する点</th>
+                                                <th style="padding: 10px; text-align: left; border: 1px solid #ccc;">
+                                                    こんな時に使う</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="background: #e8f5e9;">
+                                                <td
+                                                    style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: bold;">
+                                                    ⭐ 全員最低1回保証</td>
+                                                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                                                    公平性</td>
+                                                <td style="padding: 10px; border: 1px solid #ddd;">
+                                                    ほぼ全ての場合に推奨。「希望したのに0回」を防ぐ</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                                                    参加者優先</td>
+                                                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                                                    制約が厳しい人</td>
+                                                <td style="padding: 10px; border: 1px solid #ddd;">
+                                                    「この日しかダメ」な人を確実に割当てたい場合</td>
+                                            </tr>
+                                            <tr style="background: #fafafa;">
+                                                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                                                    標準</td>
+                                                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                                                    スロット充足</td>
+                                                <td style="padding: 10px; border: 1px solid #ddd;">人手不足で空き枠を埋めることが最優先の場合
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                                                    日付順</td>
+                                                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                                                    シンプルさ</td>
+                                                <td style="padding: 10px; border: 1px solid #ddd;">結果比較やデバッグ用</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <p class="logic-note">
+                                    ※ 全てのロジックで「前後NG期間制約」が適用されます
+                                </p>
+                            </div>
+                        </details>
+
+                        <button class="btn btn-primary btn-large" id="assignBtn">
+                            🎯 シフトを自動割当て
+                        </button>
+                        <div id="assignBlockedReason" class="assign-blocked-reason">
+                            実行前に対応: シフトファイルを読み込んでください
+                        </div>
+                    </div>
+                    <div class="progress-container hidden" id="progressContainer">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <p class="progress-text" id="progressText">処理中...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 4: Results -->
+            <section class="card hidden" id="resultSection">
+                <div class="card-header">
+                    <span class="step-badge">STEP 4</span>
+                    <h2>割当て結果</h2>
+                    <button class="btn btn-primary" id="exportBtn">
+                        📥 Excel出力
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="result-summary" id="resultSummary"></div>
+
+                    <!-- タブで切り替え -->
+                    <div class="tabs">
+                        <button class="tab active" data-tab="shiftResultTab">旗振りシフト日と場所</button>
+                        <button class="tab" data-tab="assignmentSummaryTab">割当て集計</button>
+                        <button class="tab" data-tab="preferredDatesDensityTab">特定希望日集中度</button>
+                        <button class="tab" data-tab="detailAnalysisTab">詳細分析（回答照合）</button>
+                    </div>
+
+                    <div class="tab-content active" id="shiftResultTab">
+                        <div class="table-wrapper">
+                            <table id="resultTable"></table>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="assignmentSummaryTab">
+                        <div class="table-wrapper">
+                            <table id="assignmentSummaryTable"></table>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="preferredDatesDensityTab">
+                        <div class="analysis-legend"
+                            style="margin-bottom: 15px; padding: 10px; background: #f5f5f5; border-radius: 8px;">
+                            <strong>📊 特定希望日の集中度</strong>
+                            <span style="margin-left: 15px; font-size: 0.9em; color: #666;">
+                                各日・各場所に「この日にしか来られない」と回答した人数を表示します。
+                                数字が大きいほど、その日・場所への希望が集中しています。
+                            </span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table id="preferredDatesDensityTable"></table>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="detailAnalysisTab">
+                        <div class="analysis-legend"
+                            style="margin-bottom: 15px; padding: 10px; background: #f5f5f5; border-radius: 8px;">
+                            <strong>凡例:</strong>
+                            <span
+                                style="margin-left: 15px; padding: 3px 8px; background: #e8f5e9; border-radius: 4px;">✅
+                                条件合致</span>
+                            <span
+                                style="margin-left: 10px; padding: 3px 8px; background: #fff3e0; border-radius: 4px;">⚠️
+                                条件外（追加対応）</span>
+                            <span
+                                style="margin-left: 10px; padding: 3px 8px; background: #ffebee; border-radius: 4px;">❌
+                                問題あり</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table id="detailAnalysisTable"></table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Unassigned List -->
+            <section class="card hidden" id="unassignedSection">
+                <div class="card-header">
+                    <h2>⚠️ 未割当て</h2>
+                </div>
+                <div class="card-body">
+                    <div class="unassigned-list" id="unassignedList"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div style="margin-bottom: 12px;">
+                <a href="contact.html"
+                    style="color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 500; font-size: 0.9rem; border-bottom: 1px dashed rgba(255,255,255,0.4);">
+                    📨 お問い合わせ
+                </a>
+            </div>
+            <p>© 2025 千葉県某小学校PTA. All rights reserved.</p>
+            <p>PTA旗振りシフト割当てツール ver.202512</p>
+        </footer>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

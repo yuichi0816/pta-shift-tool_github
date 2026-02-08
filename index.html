@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>挨拶・旗振りシフト割当てツール - ホーム</title>
+    <meta name="description" content="PTAの旗振り・挨拶当番のシフト作成を支援するツール群">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚸</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #1e2a2a;
+            --muted: #4b5a58;
+            --forest: #0f5b3a;
+            --leaf: #4c9a64;
+            --sun: #f3b33b;
+            --mist: #f7f4ee;
+            --card: #ffffff;
+            --accent: #de6b35;
+            --shadow: 0 18px 40px rgba(13, 49, 35, 0.16);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Noto Sans JP", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(1200px 600px at 20% -10%, rgba(244, 201, 111, 0.35), transparent 60%),
+                radial-gradient(900px 500px at 90% 10%, rgba(115, 190, 145, 0.32), transparent 60%),
+                linear-gradient(180deg, #fefcf7 0%, #f0f5f2 60%, #e5efe9 100%);
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 36px 20px 64px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        .brand-mark {
+            width: 72px;
+            height: 72px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #f6c06a, #f08b3b);
+            display: grid;
+            place-items: center;
+            box-shadow: 0 16px 40px rgba(234, 135, 62, 0.25);
+            font-size: 50px;
+        }
+
+        .brand h1 {
+            font-size: 1.3rem;
+            letter-spacing: 0.03em;
+        }
+
+        .badge {
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: rgba(15, 91, 58, 0.12);
+            color: var(--forest);
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 28px;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(125deg, rgba(15, 91, 58, 0.08), transparent 60%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cpath d='M40 16c24 22 48 22 72 0' stroke='%230f5b3a' stroke-opacity='0.08' stroke-width='4' fill='none'/%3E%3Cpath d='M16 64c24 22 48 22 72 0' stroke='%23de6b35' stroke-opacity='0.08' stroke-width='4' fill='none'/%3E%3Cpath d='M64 112c24 22 48 22 72 0' stroke='%23f3b33b' stroke-opacity='0.08' stroke-width='4' fill='none'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .hero h2 {
+            font-family: "Noto Sans JP", sans-serif;
+            font-size: clamp(2.8vw, 2.4rem);
+            line-height: 1.3;
+            margin-bottom: 14px;
+        }
+
+        .hero p {
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 0.98rem;
+            margin-bottom: 18px;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn.primary {
+            background: var(--forest);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(15, 91, 58, 0.25);
+        }
+
+        .btn.ghost {
+            background: #fff;
+            color: var(--forest);
+            border: 1px solid rgba(15, 91, 58, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .hero-note {
+            display: grid;
+            gap: 12px;
+        }
+
+        .note-box {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px dashed rgba(15, 91, 58, 0.2);
+            border-radius: 16px;
+            padding: 16px;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .note-box strong {
+            color: var(--forest);
+        }
+
+        .section-title {
+            font-family: "Noto Sans JP", sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+        }
+
+        .tools {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 36px;
+        }
+
+        .tool {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 12px 26px rgba(15, 91, 58, 0.12);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid rgba(15, 91, 58, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .tool:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 32px rgba(15, 91, 58, 0.18);
+        }
+
+        .tool .icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: rgba(79, 154, 100, 0.12);
+            font-size: 22px;
+        }
+
+        .tool h3 {
+            font-size: 1rem;
+            color: var(--forest);
+        }
+
+        .tool p {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .tool span {
+            align-self: flex-start;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(243, 179, 59, 0.2);
+            color: #9b5c0c;
+        }
+
+        .steps {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 36px;
+        }
+
+        .step-list {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .step {
+            background: rgba(15, 91, 58, 0.06);
+            border-radius: 16px;
+            padding: 16px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .step-number {
+            font-family: "Noto Sans JP", sans-serif;
+            font-size: 0.85rem;
+            color: var(--forest);
+        }
+
+        .step strong {
+            font-size: 0.98rem;
+        }
+
+        .resources {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .resource-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 24px rgba(15, 91, 58, 0.14);
+        }
+
+        .resource-card a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            text-decoration: none;
+            color: var(--forest);
+            border-bottom: 1px dashed rgba(15, 91, 58, 0.2);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .resource-card a:last-child {
+            border-bottom: none;
+        }
+
+        .resource-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .resource-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-bottom: none;
+            padding: 12px 16px;
+            background: rgba(15, 91, 58, 0.06);
+            border-radius: 12px;
+            color: var(--forest);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .resource-links a:hover {
+            background: rgba(15, 91, 58, 0.12);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .resource-links {
+                grid-template-columns: 1fr;
+            }
+
+            .resource-links a {
+                justify-content: flex-start;
+                text-align: left;
+            }
+        }
+
+        footer {
+            text-align: center;
+            color: #fff;
+            margin-top: 48px;
+            padding: 24px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #0f5b3a, #1c7c4f);
+            box-shadow: var(--shadow);
+            font-size: 0.85rem;
+        }
+
+        .fade-up {
+            animation: fadeUp 0.8s ease both;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 960px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .tools {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .step-list {
+                grid-template-columns: 1fr;
+            }
+
+            .resources {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .tools {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <header class="fade-up">
+            <div class="brand">
+                <div class="brand-mark">🚸</div>
+                <div>
+                    <h1>挨拶・旗振りシフト<br>自動割当てツール for PTA</h1>
+                    <p style="font-size: 0.8rem; color: var(--muted);">千葉県某小学校</p>
+                </div>
+            </div>
+            <div class="badge">データはローカルで完結</div>
+        </header>
+
+        <section class="hero">
+            <div class="hero-card fade-up delay-1">
+                <h2>挨拶・旗振り当番のシフト作成を<br>もっと軽やかに。</h2>
+                <p>アンケートから希望条件を読み取り、自動でシフトを割当てします<br>すべての処理はブラウザ内で完結し、データは外部送信されません</p>
+                <div class="hero-actions">
+                    <a class="btn ghost" href="validator.html">🧹 入力データを先に確認</a> <a class="btn primary"
+                        href="tool.html">🎯 シフト割当てを開始</a>
+
+                </div>
+            </div>
+            <div class="hero-note fade-up delay-2">
+                <div class="note-box">
+                    <strong>ポイント1:</strong> アンケートフォームの生データをそのまま読み込みOK
+                </div>
+                <div class="note-box">
+                    <strong>ポイント2:</strong> 希望条件・公平性を考慮した割当てロジック
+                </div>
+                <div class="note-box">
+                    <strong>ポイント3:</strong> 出力はExcelで共有しやすい形式
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-up delay-2">
+            <h3 class="section-title">ツール一覧</h3>
+            <div class="tools">
+                <a class="tool" href="validator.html">
+                    <div class="icon">🧹</div>
+                    <h3>STEP 0：入力データ検証</h3>
+                    <p>フォームの回答に誤入力がないか確認し、修正済みExcelを生成します。</p>
+                    <span>最初に実行</span>
+                </a>
+                <a class="tool" href="tool.html">
+                    <div class="icon">🎯</div>
+                    <h3>STEP 1：シフト自動割当て</h3>
+                    <p>日程情報をもとに希望条件へ配慮したシフトを自動作成します。</p>
+                    <span>メインツール</span>
+                </a>
+                <a class="tool" href="manual.html">
+                    <div class="icon">📖</div>
+                    <h3>操作マニュアル</h3>
+                    <p>使い方やアンケート設計、割当てロジックをまとめたガイドです。</p>
+                    <span>ヘルプ / FAQ</span>
+                </a>
+                <a class="tool" href="survey-sample.html">
+                    <div class="icon">📝</div>
+                    <h3>アンケート設問例</h3>
+                    <p>アンケートフォームにそのまま使える設問例を確認できます。</p>
+                    <span>テンプレート</span>
+                </a>
+                <a class="tool" href="gas-config.html">
+                    <div class="icon">⚙️</div>
+                    <h3>GAS（Google Apps Script）設定ツール</h3>
+                    <p>リマインドメール送信スクリプトの設定コードを生成します。</p>
+                    <span>Google Apps Script連携</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="steps fade-up delay-3">
+            <h3 class="section-title">運用の流れ</h3>
+            <div class="step-list">
+                <div class="step">
+                    <div class="step-number">STEP 0</div>
+                    <strong>回答データを読み込む</strong>
+                    <div style="font-size: 0.85rem; color: var(--muted);">アンケートフォームの回答データを読み込み、入力ミスのチェックとデータの整形を行います。
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">STEP 1</div>
+                    <strong>割当て条件を確認</strong>
+                    <div style="font-size: 0.85rem; color: var(--muted);">修正した入力データと、日程・場所データを読み込んで条件を設定します。</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">STEP 2</div>
+                    <strong>Excelで共有</strong>
+                    <div style="font-size: 0.85rem; color: var(--muted);">自動生成されたシフトをそのまま配布できます。</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="resources fade-up delay-3">
+            <div class="resource-card">
+                <h3 class="section-title">サンプルデータ</h3>
+                <div class="resource-links">
+                    <a href="sample_data/xlsx/sample_research_data.xlsx" download>
+                        <span>📋 アンケート回答 Sample Excel</span>
+                    </a>
+                    <a href="sample_data/xlsx/sample_Day_and_FlagPoint.xlsx" download>
+                        <span>📅 旗振りシフト日と場所 Sample Excel</span>
+                    </a>
+                    <a href="sample_data/xlsx/sample_Output.xlsx" download>
+                        <span>📊 割当て結果Sample Excel</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+        <footer class="fade-up delay-3">
+            <div style="margin-bottom: 16px;">
+                <a href="contact.html"
+                    style="color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 600; font-size: 0.95rem; border-bottom: 1px dashed rgba(255,255,255,0.4); padding-bottom: 2px; transition: all 0.2s;">
+                    📨 お問い合わせ
+                </a>
+            </div>
+            <p>© 2025 千葉県某小学校PTA. All rights reserved<a href="region.html"
+                    style="text-decoration: none; color: white;">.</a></p>
+            <p>PTA旗振りシフト割当てツール ver.202512</p>
+        </footer>
+    </div>
+</body>
+
+</html>

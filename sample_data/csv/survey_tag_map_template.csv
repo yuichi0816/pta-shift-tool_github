@@ -1,0 +1,16 @@
+tag,required,type,question_text,notes
+GRADE,required,choice,お子さまの現在の学年を選択してください。,
+CLASS,required,choice,お子さまの現在のクラスを選択してください。,
+NAME,required,text,回答者（保護者）の氏名を入力してください。,
+COUNT,required,choice,期間中に参加できる合計回数を選択してください。,1回/2回/何回でも/免除希望
+NG_DATE,optional,text,参加できない日（NG日）があれば入力してください。,絶対不可の日
+PREF_DAY,required,multi_choice,参加可能な曜日をすべて選択してください。,
+PREF_MONTH,required,multi_choice,参加可能な月をすべて選択してください。,
+PREF_DATE_ONLY,optional,text,この日なら参加できる日があれば入力してください。,入力時はこの日のみ対象
+LOC_1,required,choice,希望する旗振り場所を選択してください（第1希望）。,
+LOC_2,optional,choice,希望する旗振り場所を選択してください（第2希望）。,
+LOC_3,optional,choice,希望する旗振り場所を選択してください（第3希望）。,
+LOC_4,optional,choice,希望する旗振り場所を選択してください（第4希望）。,
+ADD_SUPPORT,required,choice,欠員時の追加協力は可能ですか。,はい/いいえ
+ADD_COUNT,optional,number,（「はい」の方）追加で対応可能な回数を入力してください。,
+FREE_TEXT,optional,text,連絡事項があれば入力してください。,

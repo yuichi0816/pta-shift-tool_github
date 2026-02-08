@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アンケート設問例 - PTA旗振りシフトツール</title>
+    <meta name="description" content="PTA旗振りシフト割当てツール用のGoogleフォームアンケート設問例">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚸</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Google Sans', sans-serif;
+            background-color: #f0ebf8;
+            min-height: 100vh;
+            padding: 24px 16px;
+        }
+
+        .form-container {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* ナビゲーションバー */
+        .nav-bar {
+            background: white;
+            border-radius: 8px;
+            padding: 16px 24px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .nav-bar a {
+            color: #673ab7;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 0 12px;
+        }
+
+        .nav-bar a:hover {
+            text-decoration: underline;
+        }
+
+        .nav-bar span {
+            color: #ccc;
+        }
+
+        /* ヘッダーカード（紫のアクセント付き） */
+        .form-header {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header-accent {
+            height: 10px;
+            background: linear-gradient(90deg, #673ab7, #9c27b0);
+        }
+
+        .form-header-content {
+            padding: 24px;
+        }
+
+        .form-title {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 32px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .form-description {
+            font-size: 14px;
+            color: #5f6368;
+            line-height: 1.6;
+        }
+
+        /* セクションヘッダー */
+        .section-header {
+            background: white;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-bottom: 12px;
+            margin-top: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #673ab7;
+        }
+
+        .section-title {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 18px;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .section-description {
+            font-size: 13px;
+            color: #5f6368;
+            margin-top: 4px;
+        }
+
+        /* 質問カード */
+        .question-card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .question-card:hover {
+            border-left-color: #673ab7;
+        }
+
+        .question-title {
+            font-size: 14px;
+            color: #202124;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .required-mark {
+            color: #d93025;
+            margin-left: 4px;
+        }
+
+        /* 入力フィールド */
+        .text-input {
+            width: 50%;
+            padding: 8px 0;
+            border: none;
+            border-bottom: 1px solid #dadce0;
+            font-size: 14px;
+            color: #5f6368;
+            background: transparent;
+            outline: none;
+        }
+
+        .text-input:focus {
+            border-bottom-color: #673ab7;
+            border-bottom-width: 2px;
+        }
+
+        .text-input::placeholder {
+            color: #80868b;
+        }
+
+        /* ドロップダウン */
+        .dropdown {
+            padding: 12px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #5f6368;
+            background: white;
+            min-width: 200px;
+            cursor: pointer;
+        }
+
+        /* ラジオボタン・チェックボックス */
+        .option-list {
+            list-style: none;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .radio-circle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #5f6368;
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-square {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #5f6368;
+            border-radius: 2px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .option-label {
+            font-size: 14px;
+            color: #202124;
+        }
+
+        /* 注意書き */
+        .note {
+            background: #e8f0fe;
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #1967d2;
+        }
+
+        .note-icon {
+            margin-right: 8px;
+        }
+
+        .warning {
+            background: #fef7e0;
+            border-left: 4px solid #f9ab00;
+            padding: 12px 16px;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #5f6368;
+        }
+
+        /* サンプルバッジ */
+        .sample-badge {
+            display: inline-block;
+            background: #673ab7;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        /* コピーヒント */
+        .copy-hint {
+            background: #e8f5e9;
+            border-radius: 8px;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .copy-hint-title {
+            font-weight: 500;
+            color: #1e8e3e;
+            margin-bottom: 8px;
+        }
+
+        .copy-hint-text {
+            font-size: 13px;
+            color: #5f6368;
+            line-height: 1.6;
+        }
+
+        /* フッター */
+        footer {
+            text-align: center;
+            color: white;
+            padding: 24px 16px;
+            font-size: 0.85rem;
+            background: linear-gradient(135deg, #004d2a 0%, #006837 100%);
+            width: calc(100% + 32px);
+            margin-left: -16px;
+            margin-right: -16px;
+            margin-top: 40px;
+            margin-bottom: -24px;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <!-- ナビゲーション -->
+        <div class="nav-bar">
+            <a href="index.html">🏠 ホーム</a>
+            <span>|</span>
+            <a href="tool.html">🎯 シフト割当て</a>
+            <span>|</span>
+            <a href="manual.html">📖 マニュアル</a>
+        </div>
+
+        <!-- 使い方ヒント -->
+        <div class="copy-hint">
+            <div class="copy-hint-title">💡 このページの使い方</div>
+            <div class="copy-hint-text">
+                以下はGoogleフォームで作成するアンケートの設問例です。<br>
+                質問文をコピーしてGoogleフォームに貼り付けることで、ツールに最適化されたアンケートを作成できます。
+            </div>
+        </div>
+
+        <!-- フォームヘッダー -->
+        <div class="form-header">
+            <div class="form-header-accent"></div>
+            <div class="form-header-content">
+                <span class="sample-badge">📋 設問例</span>
+                <h1 class="form-title">旗振り当番 希望調査</h1>
+                <p class="form-description">
+                    〇〇小学校PTA 旗振り・挨拶当番の希望調査にご協力ください。<br>
+                    ご回答いただいた内容を基に、シフトを自動で割当てます。
+                </p>
+            </div>
+        </div>
+
+        <!-- セクション1: 基本情報 -->
+        <div class="section-header">
+            <div class="section-title">セクション1: 基本情報</div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                お子さまの現在の学年を選択してください<span class="required-mark">*</span>
+            </div>
+            <select class="dropdown" disabled>
+                <option>選択してください</option>
+            </select>
+            <div class="note">
+                <span class="note-icon">ℹ️</span>
+                選択肢例: 1年 / 2年 / 3年 / 4年 / 5年 / 6年
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                お子さまの現在のクラスを選択してください<span class="required-mark">*</span>
+            </div>
+            <select class="dropdown" disabled>
+                <option>選択してください</option>
+            </select>
+            <div class="note">
+                <span class="note-icon">ℹ️</span>
+                選択肢例: 1組 / 2組 / 3組 / 4組
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                回答者（保護者）の氏名を教えてください<span class="required-mark">*</span>
+            </div>
+            <input type="text" class="text-input" placeholder="例: 山田太郎" disabled>
+        </div>
+
+        <!-- セクション2: 参加可能回数 -->
+        <div class="section-header">
+            <div class="section-title">セクション2: 参加可能回数</div>
+            <div class="section-description">期間中に参加可能な回数をお知らせください</div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                期間中の参加可能回数をご回答ください<span class="required-mark">*</span>
+            </div>
+            <ul class="option-list">
+                <li class="option-item">
+                    <div class="radio-circle"></div>
+                    <span class="option-label">1回</span>
+                </li>
+                <li class="option-item">
+                    <div class="radio-circle"></div>
+                    <span class="option-label">2回</span>
+                </li>
+                <li class="option-item">
+                    <div class="radio-circle"></div>
+                    <span class="option-label">何回でも（週1回程度を上限として割り当てさせていただきます）</span>
+                </li>
+                <li class="option-item">
+                    <div class="radio-circle"></div>
+                    <span class="option-label">免除希望</span>
+                </li>
+            </ul>
+            <div class="warning">
+                ⚠️ <strong>必須入力です。</strong>空欄の場合はエラーになります。<br>
+                免除を希望する場合は「免除希望」を選択してください。
+            </div>
+        </div>
+
+        <!-- セクション3: 参加できない日付 -->
+        <div class="section-header">
+            <div class="section-title">セクション3: 参加できない特定の日付</div>
+            <div class="section-description">絶対に参加できない日があれば入力してください</div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                参加できない特定の日付があれば入力してください
+            </div>
+            <input type="text" class="text-input" placeholder="例: 2025/5/20, 2025/6/15" disabled style="width: 100%;">
+            <div class="note">
+                <span class="note-icon">ℹ️</span>
+                学校行事や私用などで絶対に参加できない日があれば入力してください。<br>
+                複数ある場合は「、」や「,」で区切って入力してください。
+            </div>
+        </div>
+
+        <!-- セクション4: 参加可能な条件 -->
+        <div class="section-header">
+            <div class="section-title">セクション4: 参加可能な条件（曜日・月）</div>
+            <div class="section-description">参加可能な曜日と月を選択してください</div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                参加可能な曜日をすべて選択してください<span class="required-mark">*</span>
+            </div>
+            <ul class="option-list">
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">月</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">火</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">水</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">木</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">金</span>
+                </li>
+            </ul>
+            <div class="warning">
+                ⚠️ <strong>重要:</strong> チェックが入っていない曜日には割当てられません。<br>
+                いつでも参加可能な場合は、すべての選択肢にチェックを入れてください。
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                参加可能な月をすべて選択してください<span class="required-mark">*</span>
+            </div>
+            <ul class="option-list">
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">4月</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">5月</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">6月</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">7月</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">9月</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">10月</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">11月</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">12月</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">1月</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">2月</span>
+                </li>
+                <li class="option-item">
+                    <div class="checkbox-square"></div>
+                    <span class="option-label">3月</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                特に「この日しか参加できない」という日付があれば入力してください
+            </div>
+            <input type="text" class="text-input" placeholder="例: 2025/5/15, 2025/6/10" disabled style="width: 100%;">
+            <div class="note">
+                <span class="note-icon">ℹ️</span>
+                特定の日付しか参加できない場合のみ入力してください。<br>
+                ここに入力があると、曜日・月の条件に関わらずその日のみが対象になります。
+            </div>
+        </div>
+
+        <!-- セクション5: 希望場所 -->
+        <div class="section-header">
+            <div class="section-title">セクション5: 希望場所</div>
+            <div class="section-description">希望する旗振り場所を選択してください</div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                ご希望する旗当番の場所を選択してください（第1希望）<span class="required-mark">*</span>
+            </div>
+            <select class="dropdown" disabled>
+                <option>選択してください</option>
+            </select>
+            <div class="note">
+                <span class="note-icon">ℹ️</span>
+                選択肢はシフト表の場所名と完全に一致させてください。
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                ご希望する旗当番の場所を選択してください（第2希望）
+            </div>
+            <select class="dropdown" disabled>
+                <option>選択してください</option>
+            </select>
+            <div class="note">
+                <span class="note-icon">ℹ️</span>
+                記入する場合は、第1希望と異なる場所を選択してください。
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                ご希望する旗当番の場所を選択してください（第3希望）
+            </div>
+            <select class="dropdown" disabled>
+                <option>選択してください</option>
+            </select>
+            <div class="note">
+                <span class="note-icon">ℹ️</span>
+                記入する場合は、第1・第2希望と異なる場所を選択してください。
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                ご希望する旗当番の場所を選択してください（第4希望）
+            </div>
+            <select class="dropdown" disabled>
+                <option>選択してください</option>
+            </select>
+            <div class="warning">
+                ⚠️ <strong>注意:</strong><br>
+                ・第1希望のみの場合、割当てが困難になる可能性があります<br>
+                ・希望地点を増やすと、より割当てられやすくなります<br>
+                ・第5希望まで対応可能です（必要に応じて追加）
+            </div>
+        </div>
+
+        <!-- セクション6: 追加対応 -->
+        <div class="section-header">
+            <div class="section-title">セクション6: 追加対応</div>
+            <div class="section-description">欠員発生時の追加対応について</div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                各旗振り地点に欠員が生じた場合、参加可能回数を超えて追加でご対応いただけますか？<span class="required-mark">*</span>
+            </div>
+            <ul class="option-list">
+                <li class="option-item">
+                    <div class="radio-circle"></div>
+                    <span class="option-label">はい</span>
+                </li>
+                <li class="option-item">
+                    <div class="radio-circle"></div>
+                    <span class="option-label">いいえ</span>
+                </li>
+            </ul>
+            <div class="note">
+                <span class="note-icon">ℹ️</span>
+                「はい」と回答された方は、欠員時に<strong>参加可能回数と同じ回数まで追加で対応</strong>していただく場合があります。<br>
+                例：参加可能回数が「2回」の場合 → 最大で合計4回まで割当てられる可能性があります。
+            </div>
+        </div>
+
+        <!-- セクション7: その他 -->
+        <div class="section-header">
+            <div class="section-title">セクション7: その他</div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title">
+                その他旗振り活動に関するご意見や連絡事項等がございましたらお知らせください
+            </div>
+            <input type="text" class="text-input" placeholder="回答を入力" disabled style="width: 100%;">
+        </div>
+
+        <!-- フッター -->
+    </div>
+
+    <footer>
+        <div style="margin-bottom: 16px;">
+            <a href="contact.html"
+                style="color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 500; font-size: 0.9rem; border-bottom: 1px dashed rgba(255,255,255,0.4);">
+                📨 お問い合わせ
+            </a>
+        </div>
+        <p>© 2025 千葉県某小学校PTA. All rights reserved.</p>
+        <p>PTA旗振りシフト割当てツール ver.202512</p>
+    </footer>
+</body>
+
+</html>

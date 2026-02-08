@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>操作マニュアル</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚸</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: #f0fdf4;
+            min-height: 100vh;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #006837;
+            font-size: 28px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header h1 {
+            color: white;
+            display: block;
+            text-align: center;
+        }
+
+        header p {
+            color: white;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 20px;
+            margin: 24px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #006837;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 16px;
+            margin: 16px 0 8px;
+        }
+
+        p,
+        li {
+            line-height: 1.8;
+            color: #555;
+        }
+
+        ul,
+        ol {
+            padding-left: 24px;
+            margin: 12px 0;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .step {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: #e8f5e9;
+            border-radius: 12px;
+            margin: 12px 0;
+        }
+
+        .step-num {
+            background: linear-gradient(135deg, #006837, #2e7d32);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-green {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-blue {
+            background: #c8e6c9;
+            color: #1b5e20;
+        }
+
+        .badge-yellow {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-red {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #e8f5e9;
+            color: #006837;
+            font-weight: 500;
+        }
+
+        .note {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+        }
+
+        .warning {
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .feature-item {
+            background: #e8f5e9;
+            padding: 12px 8px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .feature-title {
+            font-weight: bold;
+            color: #006837;
+            font-size: 14px;
+        }
+
+        .feature-item p {
+            font-size: 12px;
+            margin: 0;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 24px 16px;
+            font-size: 0.85rem;
+            background: linear-gradient(135deg, #004d2a 0%, #006837 100%);
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        footer p {
+            margin: 0;
+            color: white;
+        }
+
+        footer a.contact-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        /* サンプルデータセクション用スタイル (from index.html) */
+        .sample-data-section {
+            margin-top: 24px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            /* manual.html用の調整 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .sample-data-section h2 {
+            color: #006837;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            /* manual.htmlのデフォルトh2スタイルをリセット */
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-top: 0;
+            display: block;
+            /* flex解除 */
+            text-align: center;
+        }
+
+        .sample-data-section p {
+            color: #666;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        .sample-links {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .sample-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #e8f5e9;
+            color: #006837;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .sample-link:hover {
+            background: #006837;
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header
+        style="background: linear-gradient(135deg, #006837 0%, #2e7d32 100%); color: white; padding: 32px 20px; text-align: center; width: 100%; margin-bottom: 40px;">
+        <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 8px;"><span
+                style="font-size: 1.5em;">&#128696;</span> 操作マニュアル</h1>
+        <p style="opacity: 0.9; font-size: 0.95rem;">旗振りシフト割当てツールの使い方</p>
+        <div style="margin-top: 10px;">
+            <a href="index.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">🏠 ホーム</a>
+            <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+            <a href="tool.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">🎯 シフト割当て</a>
+            <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+            <a href="validator.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">🧹 データ検証</a>
+            <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+            <a href="survey-sample.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">📝
+                アンケート例</a>
+            <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+            <a href="gas-config.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">⚙️
+                GAS（Google Apps Script）設定</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2
+                style="color: #006837; font-size: 24px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px;">
+                📚 ツールの概要</h2>
+            <p>保護者アンケート結果を基に、旗振り・挨拶当番のシフトを自動で割当てるWebツールです。</p>
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Excel対応</div>
+                    <p>Excel入出力</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">自動割当て</div>
+                    <p>希望を考慮</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">⚖️</div>
+                    <div class="feature-title">公平性</div>
+                    <p>回数を平準化</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-title">ローカル処理</div>
+                    <p>データ送信なし</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <h2>📝 アンケートの準備 (Googleフォーム設定)</h2>
+            <p>本ツールは、以下の形式で作成されたGoogleフォームの結果（Excel形式）に最適化されています。誤動作を防ぐため、推奨設定に従ってアンケートを作成してください。</p>
+
+            <div class="note" style="margin-bottom: 16px;">
+                <strong>✅ 必須項目：</strong> 参加可能回数、第1希望（場所）、氏名<br>
+                <strong>📌 参加意思の判定：</strong> 「第1希望」が入力されていれば参加意思ありと判定されます。別途「参加意思」の質問は不要です。
+            </div>
+
+            <div class="warning">
+                <strong>⚠️ 特に注意:</strong>
+                <ul style="margin: 8px 0 0 20px;">
+                    <li><strong>参加可能回数は必須入力です。</strong> 空欄の場合はエラーになります</li>
+                    <li>免除を希望する場合は、参加可能回数に「免除希望」と記入してください</li>
+                </ul>
+            </div>
+
+            <div class="note" style="background-color: #fcfcfc; border-left: 5px solid #006837; padding: 24px;">
+                <h3 style="margin-top: 0; border-bottom: none;">📝 改善版アンケート項目 (コピー用)</h3>
+                <p style="margin-bottom: 16px;">以下の構成でGoogleフォームを作成することを推奨します。この設問文を使用すれば、ツールが自動的に列を認識します。</p>
+                <hr style="margin: 16px 0; border: 0; border-top: 1px solid #ddd;">
+
+                <h4 style="color: #006837; margin-top: 16px; font-size: 1.1em;">セクション1: 基本情報</h4>
+                <p><strong>＜1-1＞お子さまの現在の学年を選択してください<span style="color: #c62828;">【必須】</span></strong></p>
+                <p><strong>＜1-2＞お子さまの現在のクラスを選択してください<span style="color: #c62828;">【必須】</span></strong></p>
+                <p><strong>＜1-3＞回答者（保護者）の氏名を教えてください<span style="color: #c62828;">【必須】</span></strong></p>
+                <div style="padding-left: 16px; font-size: 0.9em; color: #555;">
+                    ※姓と名を続けて入力してください（例: 山田太郎）
+                </div>
+
+                <h4 style="color: #006837; margin-top: 24px; font-size: 1.1em;">セクション2: 参加可能回数</h4>
+                <p><strong>＜2-1＞期間中の参加可能回数をご回答ください<span style="color: #c62828;">【必須】</span></strong></p>
+                <div style="padding-left: 16px; font-size: 0.9em; color: #555;">
+                    ※最低1回はご参加をお願いいたします<br>
+                    選択肢: 1回 / 2回 / 何回でも（週1回程度を上限として割り当てさせていただきます） / 免除希望
+                </div>
+
+                <h4 style="color: #c62828; margin-top: 24px; font-size: 1.1em;">セクション3: 参加できない特定の日付</h4>
+                <p><strong>＜3-1＞参加できない特定の日付があれば入力してください【任意】</strong></p>
+                <div style="padding-left: 16px; font-size: 0.9em; color: #555;">
+                    ※学校行事や私用などで、絶対に参加できない日があれば入力してください。<br>
+                    ※自由記述で「、」や「,」で区切って入力（例: 2025/5/20, 2025/6/15）
+                </div>
+
+                <h4 style="color: #006837; margin-top: 24px; font-size: 1.1em;">セクション4: 参加可能な条件（曜日・月）</h4>
+                <div class="warning" style="margin-bottom: 12px; font-size: 0.9em;">
+                    <strong>⚠️ 重要：</strong> チェックが入っていない曜日・月には割当てられません。<br>
+                    いつでも参加可能な場合は、<strong>すべての選択肢にチェック</strong>を入れてください。
+                </div>
+
+                <p><strong>＜4-1＞参加可能な曜日をすべて選択してください<span style="color: #c62828;">【必須】</span></strong></p>
+                <div style="padding-left: 16px; font-size: 0.9em; color: #555;">
+                    選択肢: □月 □火 □水 □木 □金
+                </div>
+
+                <p style="margin-top: 12px;"><strong>＜4-2＞参加可能な月をすべて選択してください<span
+                            style="color: #c62828;">【必須】</span></strong></p>
+                <div style="padding-left: 16px; font-size: 0.9em; color: #555;">
+                    選択肢: □4月 □5月 □6月 □7月 □9月 □10月 □11月 □12月 □1月 □2月 □3月
+                </div>
+
+                <p style="margin-top: 12px;"><strong>＜4-3＞特に「この日しか参加できない」という日付があれば入力してください【任意】</strong></p>
+                <div style="padding-left: 16px; font-size: 0.9em; color: #555;">
+                    ※特定の日付しか参加できない場合のみ入力<br>
+                    ※ここに入力があると、曜日・月の条件に関わらずその日のみが対象になります<br>
+                    ※プルダウンから選択
+                </div>
+
+                <h4 style="color: #006837; margin-top: 24px; font-size: 1.1em;">セクション5: 希望場所</h4>
+                <p><strong>＜5-1＞ご希望する旗当番の場所を選択してください（第1希望）<span style="color: #c62828;">【必須】</span></strong></p>
+                <div style="padding-left: 16px; font-size: 0.9em; color: #555;">
+                    ※プルダウンから選択
+                </div>
+                <p style="margin-top: 12px;"><strong>＜5-2＞ご希望する旗当番の場所を選択してください（第2希望）【任意】</strong></p>
+                <div style="padding-left: 16px; font-size: 0.9em; color: #555;">
+                    ※記入する場合は、第1希望と異なる場所を選択してください
+                </div>
+                <p style="margin-top: 12px;"><strong>＜5-3＞ご希望する旗当番の場所を選択してください（第3希望）【任意】</strong></p>
+                <div style="padding-left: 16px; font-size: 0.9em; color: #555;">
+                    ※記入する場合は、第1・第2希望と異なる場所を選択してください
+                </div>
+                <p style="margin-top: 12px;"><strong>＜5-4＞ご希望する旗当番の場所を選択してください（第4希望）【任意】</strong></p>
+                <div style="padding-left: 16px; font-size: 0.9em; color: #555;">
+                    ※記入する場合は、第1～第3希望と異なる場所を選択してください<br>
+                    <div style="margin-top:8px; font-weight:bold;">【注意事項】</div>
+                    ・第1希望のみの場合、割当てが困難になる可能性があります<br>
+                    ・希望地点を増やすと、より割当てられやすくなります<br>
+                    ・第5希望まで対応可能です
+                </div>
+
+                <h4 style="color: #006837; margin-top: 24px; font-size: 1.1em;">セクション6: 追加対応</h4>
+                <p><strong>＜6-1＞各旗振り地点に欠員が生じた場合、参加可能回数を超えて追加でご対応いただけますか？<span
+                            style="color: #c62828;">【必須】</span></strong></p>
+                <div style="padding-left: 16px; font-size: 0.9em; color: #555;">
+                    選択肢: <br>
+                    - はい<br>
+                    - いいえ
+                </div>
+                <div class="note" style="margin-top: 8px; padding: 10px; font-size: 0.9em;">
+                    <strong>📌 追加対応の上限について：</strong><br>
+                    「はい」と回答された方は、欠員時に<strong>参加可能回数と同じ回数まで追加で対応</strong>していただく場合があります。<br>
+                    例：参加可能回数が「2回」の場合 → 最大で合計4回まで割当てられる可能性があります。
+                </div>
+
+                <h4 style="color: #006837; margin-top: 24px; font-size: 1.1em;">セクション7: その他</h4>
+                <p><strong>＜7-1＞その他旗振り活動に関するご意見や連絡事項等がございましたらお知らせください【任意】</strong></p>
+            </div>
+            <!--
+            <tbody>
+                <tr>
+                    <td><strong>参加可能回数</strong></td>
+                    <td>プルダウン / 記述式（短文）</td>
+                    <td>
+                        <p><strong>質問文の例：</strong></p>
+                        <p style="background:#f5f5f5; padding:8px; border-radius:4px;">
+                            「期間中（○月〜○月）に参加可能な合計回数をご記入ください。」
+                        </p>
+                        <p><strong>回答形式：</strong></p>
+                        <ul>
+                            <li><strong>参加する場合：</strong> プルダウンで「1」「2」「3」「4」「5」などの数値を選択</li>
+                            <li><strong>記述式の場合：</strong> 「期間中5回」「5回」「5」のいずれでも可</li>
+                            <li><strong>免除希望の場合：</strong> 「免除希望」または「免除」と記入</li>
+                        </ul>
+                        <div class="warning" style="margin-top:8px; padding:8px; font-size:0.9em;">
+                            <strong>⚠️ 重要：</strong><br>
+                            • <strong style="color: #d32f2f;">必須入力です。</strong>空欄の場合はエラーになります<br>
+                            • 参加する場合は、必ず<strong>期間全体での合計回数</strong>を回答してもらってください<br>
+                            • 「月2回」などの表現は避け、「期間中○回」と具体的な数値で回答してもらいます<br>
+                            • 数値が含まれていれば自動抽出されます（例：「期間中5回」→ 5回と認識）<br>
+                            • 「免除希望」と記入された方は、自動的に割当て対象外となり、結果にも表示されません<br>
+                            • データ検証ツールで、未入力や不正な形式をチェックできます
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>特定の希望日</strong></td>
+                    <td>記述式（短文・長文）</td>
+                    <td>
+                        <p><strong>「この日にしか来られない」という希望日を入力する項目です。</strong></p>
+                        <p><strong>質問文に以下のルールを明記してください：</strong></p>
+                        <p style="background:#f5f5f5; padding:8px; border-radius:4px; font-family:monospace;">
+                            「2026/01/15, 2026/01/20」のように、半角スラッシュ区切り・カンマ区切りで入力してください。<br>
+                            ※この日以外には割当てられません。柔軟な対応を希望する場合は、参加可能月・参加可能曜日を使用してください。
+                        </p>
+                        <div class="note" style="margin-top:8px; padding:8px; font-size:0.9em;">
+                            <strong>📌 注意：</strong> 特定の参加可能日を入力すると、その日のみに割当てられます。参加可能日が空欄の場合は、参加可能月・参加可能曜日の条件に従って割当てられます。
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>NG条件（参加不可）</strong><br><span class="badge badge-red"
+                            style="font-size:0.8em; margin-top:4px;">NEW</span></td>
+                    <td>チェックボックス / 記述式</td>
+                    <td>
+                        <p><strong>都合が悪い日程を除外するための項目です（任意）。</strong></p>
+                        <p>以下のキーワードを含む設問を作成すると、自動的にNG条件として認識されます。</p>
+                        <ul>
+                            <li><strong>NG日：</strong> 質問文に「NG」と「日」を含む（例：「絶対に参加できない日（NG日）」）</li>
+                            <li><strong>NG曜日：</strong> 質問文に「NG」と「曜日」を含む（例：「都合の悪い曜日（NG曜日）」）</li>
+                            <li><strong>NG月：</strong> 質問文に「NG」と「月」を含む（例：「不参加の月（NG月）」）</li>
+                        </ul>
+                        <div class="warning" style="margin-top:8px; padding:8px; font-size:0.9em;">
+                            <strong>⚠️ 優先度：</strong>
+                            ここに入力された条件は<strong>絶対</strong>です。他の希望条件に関わらず、該当するシフトには割当てられません。
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>希望場所</strong></td>
+                    <td>プルダウン</td>
+                    <td>シフト表Excelのヘッダーにある場所名を<strong>コピー＆ペースト</strong>してください。（1文字でも違うとエラーになります）</td>
+                </tr>
+                <tr>
+                    <td><strong>備考・その他</strong></td>
+                    <td>記述式（長文）</td>
+                    <td>個別の事情や特記事項を記入してもらうために設置してください。</td>
+                </tr>
+            </tbody>
+-->
+        </div>
+
+        <div class="card">
+            <h2>📁 必要なファイル</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ファイル名</th>
+                        <th>内容</th>
+                        <th>形式</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>旗振りシフト日と場所.xlsx</strong></td>
+                        <td>日付と場所のテンプレート</td>
+                        <td>
+                            <div>Excel (.xlsx)</div>
+                            <div style="margin-top: 2px;">
+                                <strong><a href="sample_data/xlsx/sample_Day_and_FlagPoint.xlsx" download
+                                        style="color: #006837; font-size: 1.1em; text-decoration: none; border-bottom: 1px solid #006837; display: inline-flex; align-items: center; gap: 4px;">
+                                        📥 サンプルDL
+                                    </a></strong>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>アンケートの回答.xlsx</strong></td>
+                        <td>保護者の希望データ</td>
+                        <td>
+                            <div>Excel (.xlsx)</div>
+                            <div style="margin-top: 2px;">
+                                <strong><a href="sample_data/xlsx/sample_research_data.xlsx" download
+                                        style="color: #006837; font-size: 1.1em; text-decoration: none; border-bottom: 1px solid #006837; display: inline-flex; align-items: center; gap: 4px;">
+                                        📥 サンプルDL
+                                    </a></strong>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="warning">
+                <strong>⚠️ 重要:</strong> 旗振りシフト日と場所の場所名とアンケートの希望場所は<strong>完全に一致</strong>させてください。不一致がある場合、エラーが表示されます。
+            </div>
+
+            <div class="note" style="margin-top: 16px;">
+                <strong>📌 複数人体制の設定:</strong><br>
+                1地点に複数名を配置する場合は、シフト表の地点名に「<strong>（N人体制）</strong>」を付けてください。<br>
+                <ul style="margin: 8px 0 0 20px;">
+                    <li>例: 「正門前（2人体制）」「交差点A（2人体制）」</li>
+                    <li>アンケートでは定員表記なしの「正門前」「交差点A」で希望場所を選択します</li>
+                    <li>定員表記がない地点は自動的に1名体制として扱われます</li>
+                    <li>出力ファイルでは複数名がカンマ区切りで表示されます</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 使い方</h2>
+
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <div class="step-title">ファイルを読み込む</div>
+                    <p>「旗振りシフト日と場所」と「アンケート回答」のExcelファイルをそれぞれ読み込ませます。</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <div class="step-title">データを確認する</div>
+                    <p>プレビュー画面で読み込まれたデータを確認します。</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <div class="step-title">自動割当てを実行</div>
+                    <p>「シフトを自動割当て」ボタンをクリックします。<br>
+                        デフォルトでは推奨ロジック「全員最低1回保証」が選択されています。<br>
+                        他のロジックを使用したい場合は「詳細設定を表示」をクリックして選択できます。</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <div class="step-title">結果を確認・出力</div>
+                    <p>割当て結果を確認し、「Excel出力」でダウンロードします。<br>「割当て集計」タブで各人の回数を確認できます。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>✅ 割当てルール</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 180px; white-space: nowrap;">ルール</th>
+                        <th>説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge badge-red">NG条件</span></td>
+                        <td>「参加できない」と回答した日・曜日・月は最優先で除外（絶対不可）</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-green">参加可能回数</span></td>
+                        <td>原則、回答した参加可能回数以内で割当て（追加対応可の人は例外）</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-green">希望場所</span></td>
+                        <td>第1～第5希望の場所のみに割当て（第4・第5希望は任意）</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-green">参加可能月・曜日</span></td>
+                        <td>チェックが入っている月・曜日のみ割当て可能（チェックがない場合はNG）</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-blue">特定参加可能日指定</span></td>
+                        <td>特定参加可能日が指定されている場合、その日のみに割当て</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-blue">同日制限</span></td>
+                        <td>同一日に複数地点への割当てを禁止</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-yellow">平準化</span></td>
+                        <td>参加可能回数が少ない人を優先的に割当て</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-yellow">何回でも対応</span></td>
+                        <td>「何回でも」選択者は回数無制限で割当て。ただし前後NG期間で間隔を確保</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-blue">プレ割当て</span></td>
+                        <td>シフト表に既に文字（名前等）が入力されている枠は、割当て対象外として維持</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-green">前後NG期間制約</span></td>
+                        <td>同一人物が指定日数以内に連続して割当てられることを防止（デフォルト7日、詳細設定で変更可能、「0」で無効化）</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-blue">複数人体制</span></td>
+                        <td>地点名に「（N人体制）」を含めると、その地点に複数名を割当て可能。例：「正門前（2人体制）」</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>📊 結果表示機能</h2>
+
+            <h3>割当て集計タブ</h3>
+            <p>「割当て集計」タブでは、各保護者への割当て状況を一覧で確認できます。</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 200px;">機能</th>
+                        <th>説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>参加可能回数列</strong></td>
+                        <td>各保護者がアンケートで回答した参加可能回数を表示</td>
+                    </tr>
+                    <tr>
+                        <td><strong>割当て回数列</strong></td>
+                        <td>実際に割当てられた回数を表示</td>
+                    </tr>
+                    <tr>
+                        <td><strong>上限超過ハイライト</strong></td>
+                        <td>参加可能回数を超えた割当てがある場合、該当行が赤くハイライトされ⚠️マークが表示されます</td>
+                    </tr>
+                    <tr>
+                        <td><strong>同姓同名対応</strong></td>
+                        <td>同姓同名・同学年の保護者がいる場合、自動的に番号（例：田中太郎_1年(2)）が付与されます</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <strong>💡 ヒント:</strong> 上限超過のハイライト表示は、アンケートデータに誤りがないか確認するのに役立ちます。赤くハイライトされた行がある場合は、元のアンケート回答を確認してください。
+            </div>
+        </div>
+
+
+
+        <div class="card">
+            <h2>📊 結果サマリーの見方</h2>
+            <p>割当て実行後に画面上部に表示される、各カードの数字の意味は以下の通りです。</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">項目</th>
+                        <th style="width: 40%;">説明</th>
+                        <th style="width: 40%;">目安・見方</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>有効回答者数</strong></td>
+                        <td>アンケートに回答した人のうち、免除希望者などを除いた「シフトに入れる人数」です。</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>参加可能回数合計</strong></td>
+                        <td>有効回答者が「この回数ならやってもいい」と申告した回数の合計です。<br>※「回数無制限」と答えた人の分は含まれません。</td>
+                        <td>これが「供給可能な労働力」の最低ラインです。<br>この数字が「総枠数」より少ない場合、そもそも人手が足りていない可能性があります。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>総枠数 (必要シフト)</strong></td>
+                        <td>学校側が求めているシフトの総数です。<br><code>場所数 × 日数</code> で計算されます。</td>
+                        <td>これを全て埋めることが「ゴール」です。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>実割当て合計</strong></td>
+                        <td>実際にシフト表に名前が書き込まれた回数の合計です。<br>※「充足率」も併記されます。</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>未割当て (不足枠)</strong></td>
+                        <td>最終的に埋まらなかった枠の数です。</td>
+                        <td><strong>「あと〇枠の人手が必要」</strong> という追加募集の目安になります。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ 割当てロジックの詳細</h2>
+            <p>このツールは、以下のルールに基づいて自動的にシフトを割当てます。</p>
+
+            <h3>1. 基本的な割当て条件</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">条件</th>
+                        <th>説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>希望場所のみ</strong></td>
+                        <td>参加者の「第1～第3希望」に含まれている場所にのみ割当てます。希望していない場所には絶対に割当てられません。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>参加可能回数（原則）</strong></td>
+                        <td>原則として「参加可能回数」を超えて割当てることはありません。<br>※ただし、「欠員時の追加対応」に「はい」と回答した方は、<strong>参加可能回数の2倍まで</strong>割当てられる場合があります（例：2回希望→最大4回まで）。
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>同日重複防止</strong></td>
+                        <td>同じ日に同じ人が複数の場所に割当てられることはありません。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>参加可能月のみ</strong></td>
+                        <td>「参加可能な月」としてチェックされた月のシフトにのみ割当てます。<br>※チェックがない月には割当てられません。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>参加可能曜日のみ</strong></td>
+                        <td>「参加可能な曜日」としてチェックされた曜日のシフトにのみ割当てます。<br>※チェックがない曜日には割当てられません。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>特定参加可能日優先</strong></td>
+                        <td>「特定の参加可能日」が指定されている場合、<strong>その日のみ</strong>に割当てます。月・曜日の条件よりも優先されます。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>前後NG期間制約</strong></td>
+                        <td>同一人物が指定日数以内に連続して割当てられることを防止します。<br>デフォルトは7日ですが、「詳細設定」で0～30日の範囲で変更できます。<br>「0」に設定するとこの制約は無効になります。
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2. 優先順位の決定方法</h3>
+            <div class="note">
+                <strong>📌 割当ての基本戦略</strong>
+                <ul style="margin-top: 8px;">
+                    <li><strong>候補者が少ないシフトから優先的に埋める</strong> - 誰も来られないシフトを確実に埋めます</li>
+                    <li><strong>より多くの選択肢がある人よりも、選択肢が少ない人を優先</strong> - 融通が利かない人を先に割当てます</li>
+                    <li><strong>割当て回数が少ない人を優先</strong> - 公平性を保つため、回数を平準化します</li>
+                    <li><strong>希望順位を考慮</strong> - 第1希望 > 第2希望 > 第3希望の順でスコアを付けます</li>
+                </ul>
+            </div>
+
+            <h3>3. 参加可能回数の必須入力</h3>
+            <div class="warning">
+                <strong>⚠️ 重要な変更点（2025年12月更新）</strong><br>
+                参加可能回数は<strong style="color: #d32f2f;">必須入力</strong>になりました。以下のルールが適用されます：
+                <ul style="margin-top: 8px;">
+                    <li><strong>未入力の場合：</strong> エラーとして扱われ、割当て対象外になります（無制限扱いはされません）</li>
+                    <li><strong>「免除希望」と記入：</strong> 割当て対象外となり、画面・Excel出力にも表示されません</li>
+                    <li><strong>「期間中5回」などのテキスト形式：</strong> 自動的に数値（5回）が抽出されます</li>
+                    <li><strong>0回と入力：</strong> エラーとして扱われます（参加しない場合は「免除希望」と記入）</li>
+                </ul>
+            </div>
+
+            <h3>4. アンケートヘッダーの柔軟性</h3>
+            <div class="note">
+                <strong>✨ 改善点（2025年12月更新）</strong><br>
+                アンケートのヘッダー（質問文）は、<strong>番号（&lt;1-1&gt;、&lt;2-1&gt;など）に依存しません</strong>。<br>
+                以下のキーワードが含まれていれば自動的に認識されます：
+                <ul style="margin-top: 8px;">
+                    <li>参加可能回数：「参加可能回数」または「希望回数」（「追加」「欠員」を含む場合は追加回数として認識）</li>
+                    <li>参加可能月：「月」＋「希望」「選択」「参加可能」のいずれか</li>
+                    <li>参加可能曜日：「曜日」＋「希望」「選択」「参加可能」のいずれか</li>
+                    <li>特定の参加可能日：「特定」「特に」または「日」＋「希望」「参加可能」のいずれか</li>
+                    <li>NG条件：「NG」「参加できない」「不参加」＋「日」「曜日」「月」（例：「参加できない日」「NG曜日」）</li>
+                    <li>第1～3希望：「第1希望」「第2希望」「第3希望」（全角・半角どちらでもOK）</li>
+                    <li>追加対応：「追加」または「欠員」を含むヘッダー（「はい/いいえ」の回答を判定）</li>
+                    <li>学年：「学年」</li>
+                    <li>氏名：「氏名」「名前」、または旧形式の「姓」「名」別カラム（どちらにも対応）</li>
+                    <li>クラス：「クラス」または「組」</li>
+                    <li>備考・自由記述：「備考」「自由」「その他」「連絡」のいずれか</li>
+                </ul>
+            </div>
+
+            <h3>5. 全員最低1回保証ロジック（推奨）の特徴</h3>
+            <p>本ツールの標準ロジックでは、以下のメリットがあります。</p>
+
+            <div class="note">
+                <strong>✅ メリット</strong>
+                <ul style="margin-top: 8px;">
+                    <li><strong>公平性の大幅向上：</strong> 「1回も割当てられない」という不満を最小化し、全員が最低限の貢献をする機会を得られます。</li>
+                    <li><strong>参加意欲の向上：</strong> 「希望を出しても割当てられないかも」という不安を解消し、「最低1回は確実」という安心感を提供します。</li>
+                    <li><strong>説明が容易：</strong> 「免除希望以外は全員1回以上」という明確なルールにより、運営側の不公平感に対する説明負担を軽減します。</li>
+                </ul>
+            </div>
+
+            <div class="warning">
+                <strong>⚠️ 注意点</strong>
+                <ul style="margin-top: 8px;">
+                    <li><strong>参加可能回数について：</strong> 全員への「1回目の割当て」を最優先するため、一部の方の参加可能回数（2回以上）が満たされない場合があります。</li>
+                    <li><strong>制約が厳しい人の優先度：</strong> 第1パスでは公平に1回ずつ割当てるため、必ずしも制約が厳しい人が最優先されるわけではありません。（ただし処理順序は制約順です）
+                    </li>
+                    <li><strong>割当て0回の可能性：</strong> 条件が極端に厳しく、入れるスロットが1つもない場合は、やむを得ず0回になる可能性があります。（この場合、警告が表示されます）</li>
+                </ul>
+            </div>
+
+            <h3>6. 割当てロジックの選択（詳細設定）</h3>
+            <p>通常は推奨ロジック「全員最低1回保証」がデフォルトで選択されています。<br>
+                「詳細設定を表示」をクリックすると、他のロジックも選択できます。</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30%; white-space: nowrap;">ロジック</th>
+                        <th style="width: 20%;">重視する点</th>
+                        <th>こんな時に使う</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #e8f5e9;">
+                        <td><strong>⭐ 全員最低1回保証（推奨）</strong></td>
+                        <td>公平性</td>
+                        <td>ほぼ全ての場合に推奨。「希望したのに0回」を防ぐ</td>
+                    </tr>
+                    <tr>
+                        <td>参加者優先</td>
+                        <td>制約が厳しい人</td>
+                        <td>「この日しかダメ」な人を確実に割当てたい場合</td>
+                    </tr>
+                    <tr>
+                        <td>標準</td>
+                        <td>スロット充足</td>
+                        <td>人手不足で空き枠を埋めることが最優先の場合</td>
+                    </tr>
+                    <tr>
+                        <td>日付順</td>
+                        <td>シンプルさ</td>
+                        <td>結果比較やデバッグ用</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <strong>📌 注意:</strong> 全てのロジックで「前後NG期間制約」が適用されます。
+                デフォルトは7日間ですが、詳細設定で0～30日の範囲で変更できます（「0」で無効化）。
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 割当て結果の表示について</h2>
+
+            <h3>割当て0回の参加者も表示されます</h3>
+            <div class="note">
+                <strong>✨ 改善点（2025年12月更新）</strong><br>
+                条件を提出したが割当てが0回だった参加者も、画面とExcel出力の両方に表示されるようになりました。<br>
+                これにより、以下のメリットがあります：
+                <ul style="margin-top: 8px;">
+                    <li><strong>参加可能回数合計の一致：</strong> 画面表示とExcel出力の参加可能回数合計が一致します</li>
+                    <li><strong>未割当て者の把握：</strong> 誰が割当てられなかったかが一目でわかります</li>
+                    <li><strong>追加募集の計画：</strong> 未割当て者への個別連絡や追加募集の判断材料になります</li>
+                </ul>
+                ※ 「免除希望」と記入した人は表示されません
+            </div>
+
+            <h3>参加可能回数合計の表示</h3>
+            <p>画面とExcel出力の「参加可能回数合計」には、免除希望者を除く全参加者の参加可能回数が含まれます。<br>
+                割当て0回の人の参加可能回数も含まれるため、「実割当て合計」と一致しない場合があります。</p>
+        </div>
+
+        <div class="card">
+            <h2>❓ よくある質問</h2>
+
+            <h3>Q: 場所名不一致エラーが出る</h3>
+            <p>旗振りシフト日と場所のヘッダーとアンケートの希望場所の選択肢を完全に一致させてください。全角/半角、スペースの有無も確認してください。</p>
+
+            <h3>Q: 追加募集（再割当て）を行いたい／手動で枠を埋めておきたい</h3>
+            <p><strong>前回作成したシフト表（途中まで埋まった状態）</strong>を「旗振りシフト日と場所」として読み込ませてください。<br>
+                ツールは文字が入っているセルを「既に決定済み」と判断して維持し、空欄のセルだけを対象に、新しいアンケート回答を使って追加割当てを行います。<br>
+                これを利用して、「1次募集で埋まらなかった枠を2次募集で埋める」といった運用が可能です。</p>
+
+            <h3>Q: 割当てが0になる</h3>
+            <p>上記の場所名不一致か、参加可能月・曜日・日付の条件が厳しすぎる可能性があります。アンケート回答を確認してください。</p>
+
+            <h3>Q: データはサーバーに送信される？</h3>
+            <p>いいえ。すべての処理はブラウザ内で完結します。データは外部に送信されません。</p>
+
+            <h3>Q: 参加可能回数の合計は足りているのに、埋まらない枠があるのはなぜ？</h3>
+            <p>「需要と供給のミスマッチ」が原因と考えられます。<br>
+                数の上では足りていても、以下の理由でマッチングできない場合があります。</p>
+            <ul>
+                <li><strong>場所の不人気:</strong> 空いている場所を「第1～第3希望」に書いている人がもう残っていない。</li>
+                <li><strong>曜日の不一致:</strong> 空いている曜日に来られる人が残っていない。</li>
+                <li><strong>同日重複:</strong> 余力がある人はいるが、その日は既に別の場所に割当て済みで、ダブルブッキングになるため入れない。</li>
+            </ul>
+            <div class="note">
+                <strong>対策:</strong> 「どの場所でも可」という人を増やすか、特定の不人気な場所・曜日に限定して追加募集を行う必要があります。
+            </div>
+        </div>
+
+        <!-- リマインドメール機能 -->
+        <div class="card">
+            <h2>📧 リマインドメール機能（オプション）</h2>
+            <p>割当てられた保護者へ自動で<strong>指定した日時</strong>に、リマインドメールを送信する機能です。<br>
+                Google Apps Script（GAS）を使用して無料で運用できます。</p>
+
+            <div class="feature-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="feature-item">
+                    <div class="feature-icon">📅</div>
+                    <div class="feature-title">毎日自動実行</div>
+                    <p>指定時刻に実行</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📨</div>
+                    <div class="feature-title">個別送信</div>
+                    <p>担当者ごとにメール</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📍</div>
+                    <div class="feature-title">資料添付</div>
+                    <p>地図などを自動添付</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🗂️</div>
+                    <div class="feature-title">自動整理</div>
+                    <p>送信済みをアーカイブ</p>
+                </div>
+            </div>
+
+            <h3>事前準備</h3>
+            <ul>
+                <li><strong>Googleフォーム:</strong> 「メールアドレスを収集する」設定を有効にしてください</li>
+                <li><strong>Googleドライブ:</strong>
+                    <ul style="margin-top: 4px;">
+                        <li>「<strong>旗振り担当日リマインドメール自動送信</strong>」スプレッドシートを用意してください</li>
+                        <li>地図などの添付ファイルを送りたい場合は、<strong>スプレッドシートと同じフォルダ</strong>に置いてください</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="note"
+                style="background-color: #f0f8ff; border-left: 5px solid #007bff; padding: 16px; margin: 24px 0;">
+                <h3 style="margin-top: 0; border-bottom: none; color: #0056b3;">✨ かんたん設定ツールがあります</h3>
+                <p style="margin-bottom: 12px;">
+                    設定コードを自動生成するツールを用意しました。<br>
+                    プログラム（CONFIG）を直接編集する必要がなく、安全に設定を作成できます。
+                </p>
+                <a href="gas-config.html" class="sample-link" style="background: #007bff; color: white;">
+                    ⚙️ GAS設定ジェネレーターを開く
+                </a>
+            </div>
+
+            <h3>セットアップ手順</h3>
+
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <div class="step-title">データを準備</div>
+                    <p>Googleドライブ内の「<strong>旗振り担当日リマインドメール自動送信</strong>」スプレッドシートを開き、以下のデータを貼り付けてください:</p>
+                    <ul style="margin: 8px 0 0 16px;">
+                        <li><strong>「アンケート回答」シート:</strong> アンケート回答結果の生データをそのまま貼り付け</li>
+                        <li><strong>「シフト結果」シート:</strong> 旗振りシフトツールで生成したシフト表をそのまま貼り付け</li>
+                    </ul>
+                    <p style="margin-top: 8px; color: #666; font-size: 0.9em;">
+                        ※「送信ログ」シートは自動作成されます
+                    </p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <div class="step-title">設定コードを生成</div>
+                    <p>
+                        <a href="gas-config.html"
+                            style="font-weight: bold; text-decoration: underline;">GAS設定ジェネレーター</a>を開き、
+                        シート名や列位置などを入力して「コードを生成」をクリックします。<br>
+                        生成されたコードを「コピー」ボタンでコピーしてください。
+                    </p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <div class="step-title">Apps Scriptを開く</div>
+                    <p>スプレッドシートのメニューから <strong>「拡張機能」→「Apps Script」</strong> を選択します。</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <div class="step-title">コードを貼り付け</div>
+                    <p>
+                        エディタが開いたら、もともと入っているコード（<code>function myFunction()...</code>など）を<strong>全て削除</strong>します。<br>
+                        その後、ジェネレーターでコピーしたコードを<strong>貼り付け（Ctrl+V）</strong>し、保存（Ctrl+S）してください。
+                    </p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">5</div>
+                <div class="step-content">
+                    <div class="step-title">シミュレーションでテスト</div>
+                    <p>まず <code>simulateTomorrow</code> 関数を実行して、データが正しく読み取れているか確認してください。<br>
+                        <strong>「表示」→「ログ」</strong> で照合結果を確認できます（メールは送信されません）。
+                    </p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">6</div>
+                <div class="step-content">
+                    <div class="step-title">トリガーを設定</div>
+                    <p>シミュレーション結果に問題がなければ、<code>createDailyTrigger</code> 関数を一度実行してください。<br>
+                        これで毎日指定した時刻（デフォルトは担当前日の20時）に自動実行されます。</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">7</div>
+                <div class="step-content">
+                    <div class="step-title">権限を承認</div>
+                    <p>初回実行時にGoogleアカウントの権限承認画面が表示されます。<br>
+                        「詳細」→「（安全でないページに移動）」→「許可」をクリックしてください。</p>
+                </div>
+            </div>
+
+            <h3>送信されるメールの例</h3>
+            <div
+                style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px; font-family: monospace; font-size: 0.9em; margin: 16px 0;">
+                <div style="border-bottom: 1px solid #dee2e6; padding-bottom: 8px; margin-bottom: 12px;">
+                    <strong>件名:</strong> 【リマインド】明日は旗振り当番です
+                </div>
+                <div style="white-space: pre-line;">山田太郎 様
+
+                    明日は旗振り当番の日です。
+
+                    ━━━━━━━━━━━━━━━━━━━━━━
+                    📅 日付: 2026/02/05
+                    📍 場所: 正門前
+                    ━━━━━━━━━━━━━━━━━━━━━━
+
+                    お忙しいところ恐れ入りますが、
+                    ご対応のほどよろしくお願いいたします。
+
+                    ※このメールは自動送信されています。
+                    ※ご都合が悪くなった場合は、PTA担当者までご連絡ください。
+
+                    --
+                    PTA旗振りシフト管理システム</div>
+            </div>
+
+            <div class="warning">
+                <strong>⚠️ 注意:</strong>
+                <ul style="margin: 8px 0 0 16px;">
+                    <li>シフト結果の氏名に「_2年」等のサフィックスが付いている場合、自動で除去して照合します</li>
+                    <li>送信済みメールは「旗振りリマインド」ラベルを付けて自動アーカイブされます</li>
+                    <li>二重送信防止のため、送信ログをチェックしてから送信します</li>
+                    <li><strong>添付ファイルについて:</strong>
+                        GAS設定ジェネレーターで指定したファイル名（末尾一致）を<strong>スプレッドシートと同じフォルダ</strong>から自動検索します（例：「R8_旗振り地点について.pdf」など、年度ごとにファイル名が変わっても対応可能です）。
+                    </li>
+                </ul>
+            </div>
+
+            <h3>📋 関数一覧</h3>
+            <table style="width: 100%; margin: 16px 0; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 35%;">関数名</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><code>sendReminders()</code></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">📧 <strong>メイン処理</strong>:
+                            明日の担当者にリマインドメールを送信（トリガーから自動実行）</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><code>createDailyTrigger()</code></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">⏰ <strong>自動送信を開始</strong>:
+                            毎日20時に自動実行するトリガーを設定</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><code>deleteDailyTrigger()</code></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">🗑️ <strong>自動送信を停止</strong>: トリガーを削除して自動送信を解除
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><code>simulateTomorrow()</code></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">🔍 明日の送信をシミュレーション（メール送信なし、ログで確認）</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><code>simulateToday()</code></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">🔍 今日の送信をシミュレーション（メール送信なし）</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><code>testSendReminders()</code></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">🧪 今日の担当者に<strong>実際にテストメール送信</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <strong>💡 自動送信を停止するには:</strong><br>
+                <code>deleteDailyTrigger()</code> 関数を実行すると、毎日の自動送信を停止できます。<br>
+                再度開始したい場合は <code>createDailyTrigger()</code> を実行してください。
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <footer>
+        <a href="contact.html" class="contact-link">📨 お問い合わせ</a>
+        <p>© 2025 千葉県某小学校PTA. All rights reserved<a href="region.html"
+                style="text-decoration: none; color: white;">.</a></p>
+        <p>PTA旗振りシフト割当てツール ver.202512</p>
+    </footer>
+</body>
+
+</html>

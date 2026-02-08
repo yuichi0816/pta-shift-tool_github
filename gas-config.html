@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAS（Google Apps Script）設定ツール</title>
+    <meta name="description" content="リマインドメール送信スクリプトの設定コードを生成するツール">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* 追加スタイル */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #006837;
+            box-shadow: 0 0 0 3px rgba(0, 104, 55, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 200px;
+            resize: vertical;
+            font-family: 'Courier New', Consolas, monospace;
+        }
+
+        .form-hint {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .code-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .code-output .keyword {
+            color: #569cd6;
+        }
+
+        .code-output .string {
+            color: #ce9178;
+        }
+
+        .code-output .number {
+            color: #b5cea8;
+        }
+
+        .code-output .comment {
+            color: #6a9955;
+        }
+
+        .copy-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #006837;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #005530;
+            transform: translateY(-1px);
+        }
+
+        .copy-btn.copied {
+            background: #2e7d32;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .reset-btn {
+            padding: 12px 24px;
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reset-btn:hover {
+            background: #eee;
+        }
+
+        .section-divider {
+            border-top: 1px solid #e0e0e0;
+            margin: 24px 0;
+            padding-top: 24px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #006837;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-box {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .preview-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .email-preview {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 16px;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .variable-hint {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .variable-hint code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', Consolas, monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <h1 class="logo"><span style="font-size: 1.5em;">⚙️</span> Google Apps Script 設定ツール</h1>
+                <p class="tagline">GAS（Google Apps Script）でリマインドメールを自動送信</p>
+                <div style="margin-top: 10px;">
+                    <a href="index.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">🏠 ホーム</a>
+                    <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+                    <a href="tool.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">🎯
+                        シフト割当て</a>
+                    <span style="margin: 0 10px; color: rgba(255,255,255,0.5);">|</span>
+                    <a href="manual.html" style="color: white; text-decoration: underline; font-size: 0.9rem;">📖
+                        マニュアル</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main container">
+            <!-- Step 1: Sheet Settings -->
+            <section class="card" id="sheetSection">
+                <div class="card-header">
+                    <span class="step-badge">STEP 1</span>
+                    <h2>シート・列の設定</h2>
+                </div>
+                <div class="card-body">
+                    <div class="section-title">📋 シート名</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="shiftSheetName">シフト結果シート名</label>
+                            <input type="text" id="shiftSheetName" value="シフト結果">
+                        </div>
+                        <div class="form-group">
+                            <label for="surveySheetName">アンケート回答シート名</label>
+                            <input type="text" id="surveySheetName" value="アンケート回答">
+                        </div>
+                        <div class="form-group">
+                            <label for="logSheetName">送信ログシート名</label>
+                            <input type="text" id="logSheetName" value="送信ログ">
+                            <p class="form-hint">※自動作成されます</p>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <div class="section-title">📊 シフト結果シートの列設定</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="shiftDateCol">日付が入っている列</label>
+                            <select id="shiftDateCol"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="shiftLocationStartCol">地点の開始列</label>
+                            <select id="shiftLocationStartCol"></select>
+                            <p class="form-hint">※終了列は自動検出されます</p>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <div class="section-title">📝 アンケート回答シートの列設定</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="surveyEmailCol">メールアドレス列</label>
+                            <select id="surveyEmailCol"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="surveyNameCol">氏名列</label>
+                            <select id="surveyNameCol"></select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 2: Send Settings -->
+            <section class="card" id="sendSection">
+                <div class="card-header">
+                    <span class="step-badge">STEP 2</span>
+                    <h2>送信設定</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="daysBefore">何日前にリマインド</label>
+                            <select id="daysBefore">
+                                <option value="0">当日（0日前）</option>
+                                <option value="1" selected>前日（1日前）</option>
+                                <option value="2">2日前</option>
+                                <option value="3">3日前</option>
+                                <option value="7">1週間前（7日前）</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sendHour">送信時刻（日本時間）</label>
+                            <select id="sendHour"></select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 3: Email Settings -->
+            <section class="card" id="emailSection">
+                <div class="card-header">
+                    <span class="step-badge">STEP 3</span>
+                    <h2>メール設定</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="emailSubject">メール件名</label>
+                            <input type="text" id="emailSubject" value="【リマインド】明日は旗振り当番です">
+                        </div>
+                        <div class="form-group">
+                            <label for="labelName">Gmailラベル名</label>
+                            <input type="text" id="labelName" value="旗振りリマインド">
+                        </div>
+                        <div class="form-group">
+                            <label for="attachmentFilename">添付ファイル名（末尾一致）</label>
+                            <input type="text" id="attachmentFilename" value="旗振り地点について.pdf">
+                            <p class="form-hint">※空欄にすると添付なし。例: R7旗振り地点について.pdf, R8旗振り地点について.pdf にマッチ</p>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <div class="section-title">✉️ メール本文</div>
+                    <div class="variable-hint">
+                        <strong>使用可能な変数:</strong><br>
+                        <code>{name}</code> → 担当者の氏名<br>
+                        <code>{date}</code> → 担当日（YYYY/MM/DD形式）<br>
+                        <code>{location}</code> → 場所（地点名）
+                    </div>
+                    <div class="form-group">
+                        <textarea id="emailBody">{name} 様
+
+明日は旗振り当番の日です。
+
+━━━━━━━━━━━━━━━━━━━━━━
+📅 日付: {date}
+📍 場所: {location}
+━━━━━━━━━━━━━━━━━━━━━━
+
+お忙しいところ恐れ入りますが、
+ご対応のほどよろしくお願いいたします。
+
+※このメールは自動送信されています。
+※ご都合が悪くなった場合は、PTA担当者までご連絡ください。
+
+--
+PTA旗振りシフト管理システム</textarea>
+                    </div>
+
+                    <div class="preview-box">
+                        <div class="preview-label">📧 プレビュー（サンプルデータで表示）</div>
+                        <div class="email-preview" id="emailPreview"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 4: Generate Code -->
+            <section class="card" id="generateSection">
+                <div class="card-header">
+                    <span class="step-badge">STEP 4</span>
+                    <h2>コード生成</h2>
+                </div>
+                <div class="card-body">
+                    <p style="margin-bottom: 16px; color: #666;">
+                        下記の手順でGoogle Apps Scriptに設定を適用してください：
+                    </p>
+                    <ol style="margin-bottom: 20px; padding-left: 24px; color: #333; line-height: 1.8;">
+                        <li>「コードを生成」ボタンをクリック</li>
+                        <li>生成されたコードを「コピー」ボタンでコピー</li>
+                        <li>Apps Scriptエディタで <code>reminder_email.gs</code> を開く</li>
+                        <li><strong>既存のコードを全て削除</strong>（Ctrl+A → Delete）</li>
+                        <li>コピーしたコードを貼り付け（Ctrl+V）</li>
+                        <li>保存（Ctrl+S）して完了</li>
+                    </ol>
+
+                    <div class="action-row">
+                        <button class="btn btn-primary" id="generateBtn" onclick="generateCode()">
+                            🔧 コードを生成
+                        </button>
+                        <button class="reset-btn" onclick="resetToDefaults()">
+                            🔄 デフォルトに戻す
+                        </button>
+                    </div>
+
+                    <div id="codeOutput" style="display: none; margin-top: 24px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="font-weight: 500; color: #333;">生成されたコード:</span>
+                            <button class="copy-btn" id="copyBtn" onclick="copyCode()">
+                                📋 コピー
+                            </button>
+                        </div>
+                        <div class="code-output" id="generatedCode"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div style="margin-bottom: 12px;">
+                <a href="contact.html"
+                    style="color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 500; font-size: 0.9rem; border-bottom: 1px dashed rgba(255,255,255,0.4);">
+                    📨 お問い合わせ
+                </a>
+            </div>
+            <p>© 2025 千葉県某小学校PTA. All rights reserved.</p>
+            <p>GAS（Google Apps Script）設定ツール ver.202602</p>
+        </footer>
+    </div>
+
+    <script>
+        // デフォルト値
+        const DEFAULTS = {
+            shiftSheetName: 'シフト結果',
+            surveySheetName: 'アンケート回答',
+            logSheetName: '送信ログ',
+            shiftDateCol: 'A',
+            shiftLocationStartCol: 'C',
+            surveyEmailCol: 'B',
+            surveyNameCol: 'N',
+            daysBefore: '1',
+            sendHour: '20',
+            emailSubject: '【リマインド】明日は旗振り当番です',
+            labelName: '旗振りリマインド',
+            attachmentFilename: '旗振り地点について.pdf',
+            emailBody: `{name} 様
+
+明日は旗振り当番の日です。
+
+━━━━━━━━━━━━━━━━━━━━━━
+📅 日付: {date}
+📍 場所: {location}
+━━━━━━━━━━━━━━━━━━━━━━
+
+お忙しいところ恐れ入りますが、
+ご対応のほどよろしくお願いいたします。
+
+※このメールは自動送信されています。
+※ご都合が悪くなった場合は、PTA担当者までご連絡ください。
+
+--
+PTA旗振りシフト管理システム`
+        };
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            initColumnSelects();
+            initHourSelect();
+            updateEmailPreview();
+
+            // メール本文変更時にプレビュー更新
+            document.getElementById('emailBody').addEventListener('input', updateEmailPreview);
+        });
+
+        // 列選択プルダウンを初期化
+        function initColumnSelects() {
+            const columns = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            const selects = ['shiftDateCol', 'shiftLocationStartCol', 'surveyEmailCol', 'surveyNameCol'];
+
+            selects.forEach(id => {
+                const select = document.getElementById(id);
+                columns.forEach(col => {
+                    const option = document.createElement('option');
+                    option.value = col;
+                    option.textContent = col + '列';
+                    select.appendChild(option);
+                });
+            });
+
+            // デフォルト値を設定
+            document.getElementById('shiftDateCol').value = DEFAULTS.shiftDateCol;
+            document.getElementById('shiftLocationStartCol').value = DEFAULTS.shiftLocationStartCol;
+            document.getElementById('surveyEmailCol').value = DEFAULTS.surveyEmailCol;
+            document.getElementById('surveyNameCol').value = DEFAULTS.surveyNameCol;
+        }
+
+        // 時刻選択プルダウンを初期化
+        function initHourSelect() {
+            const select = document.getElementById('sendHour');
+            for (let hour = 0; hour < 24; hour++) {
+                const option = document.createElement('option');
+                option.value = hour;
+                option.textContent = `${hour}時`;
+                if (hour === 20) option.selected = true;
+                select.appendChild(option);
+            }
+        }
+
+        // メールプレビューを更新
+        function updateEmailPreview() {
+            const body = document.getElementById('emailBody').value;
+            const preview = body
+                .replace(/{name}/g, '田中太郎')
+                .replace(/{date}/g, '2026/02/05')
+                .replace(/{location}/g, '正門前交差点');
+            document.getElementById('emailPreview').textContent = preview;
+        }
+
+        // デフォルトに戻す
+        function resetToDefaults() {
+            document.getElementById('shiftSheetName').value = DEFAULTS.shiftSheetName;
+            document.getElementById('surveySheetName').value = DEFAULTS.surveySheetName;
+            document.getElementById('logSheetName').value = DEFAULTS.logSheetName;
+            document.getElementById('shiftDateCol').value = DEFAULTS.shiftDateCol;
+            document.getElementById('shiftLocationStartCol').value = DEFAULTS.shiftLocationStartCol;
+            document.getElementById('surveyEmailCol').value = DEFAULTS.surveyEmailCol;
+            document.getElementById('surveyNameCol').value = DEFAULTS.surveyNameCol;
+            document.getElementById('daysBefore').value = DEFAULTS.daysBefore;
+            document.getElementById('sendHour').value = DEFAULTS.sendHour;
+            document.getElementById('emailSubject').value = DEFAULTS.emailSubject;
+            document.getElementById('labelName').value = DEFAULTS.labelName;
+            document.getElementById('attachmentFilename').value = DEFAULTS.attachmentFilename;
+            document.getElementById('emailBody').value = DEFAULTS.emailBody;
+            updateEmailPreview();
+            document.getElementById('codeOutput').style.display = 'none';
+        }
+
+        // コード生成（完全なGASスクリプトを生成）
+        function generateCode() {
+            const shiftSheetName = document.getElementById('shiftSheetName').value;
+            const surveySheetName = document.getElementById('surveySheetName').value;
+            const logSheetName = document.getElementById('logSheetName').value;
+            const shiftDateCol = document.getElementById('shiftDateCol').value;
+            const shiftLocationStartCol = document.getElementById('shiftLocationStartCol').value;
+            const surveyEmailCol = document.getElementById('surveyEmailCol').value;
+            const surveyNameCol = document.getElementById('surveyNameCol').value;
+            const daysBefore = document.getElementById('daysBefore').value;
+            const sendHour = document.getElementById('sendHour').value;
+            const emailSubject = document.getElementById('emailSubject').value;
+            const labelName = document.getElementById('labelName').value;
+            const attachmentFilename = document.getElementById('attachmentFilename').value;
+            const emailBody = document.getElementById('emailBody').value;
+
+            // メール本文をGASテンプレートリテラル形式に変換
+            const bodyCode = emailBody
+                .replace(/\\/g, '\\\\')
+                .replace(/`/g, '\\`')
+                .replace(/\$/g, '\\$')
+                .replace(/{name}/g, '${assignment.name}')
+                .replace(/{date}/g, '${assignment.date}')
+                .replace(/{location}/g, '${assignment.location}');
+
+            const code = `/**
+ * PTA旗振りシフト リマインドメール送信スクリプト
+ * 
+ * 使い方:
+ * 1. このスクリプトをGoogleスプレッドシートのApps Scriptにコピー
+ * 2. 「設定」シートを作成し、必要な情報を入力
+ * 3. sendReminders関数を毎日実行するトリガーを設定
+ */
+
+// ╔════════════════════════════════════════════════════════════════╗
+// ║                    ★ 設定エリア ★                              ║
+// ║  ここを環境に合わせて変更してください                            ║
+// ╚════════════════════════════════════════════════════════════════╝
+
+const CONFIG = {
+  
+  // ─────────────────────────────────────────────────────────────────
+  // シート名の設定
+  // ─────────────────────────────────────────────────────────────────
+  SHIFT_SHEET_NAME: '${escapeString(shiftSheetName)}',       // シフト結果が入っているシート名
+  SURVEY_SHEET_NAME: '${escapeString(surveySheetName)}',   // アンケート回答が入っているシート名
+  LOG_SHEET_NAME: '${escapeString(logSheetName)}',            // 送信ログを記録するシート名（自動作成）
+  
+  // ─────────────────────────────────────────────────────────────────
+  // シフト結果シートの列設定（横持ち形式）
+  // 
+  // 例: | 日付 | 曜日 | 地点A | 地点B | 地点C | ...
+  //     | 2/5  | 月   | 田中  | 佐藤  | 山田  | ...
+  // ─────────────────────────────────────────────────────────────────
+  SHIFT_DATE_COL: '${shiftDateCol}',              // 日付が入っている列
+  SHIFT_LOCATION_START_COL: '${shiftLocationStartCol}',    // 地点の開始列
+  // ※地点の終了列は自動検出（ヘッダー行の空でない最後の列まで）
+  
+  // ─────────────────────────────────────────────────────────────────
+  // アンケート回答シートの列設定
+  // ─────────────────────────────────────────────────────────────────
+  SURVEY_EMAIL_COL: '${surveyEmailCol}',            // メールアドレス列
+  SURVEY_NAME_COL: '${surveyNameCol}',             // 氏名列
+  
+  // ─────────────────────────────────────────────────────────────────
+  // 氏名の照合設定
+  // 
+  // シフト結果の氏名に「_2年」や「_4年(2)」のようなサフィックスが付いている場合、
+  // この正規表現で除去してからアンケート回答と照合します。
+  // 例: 「佐藤太郎_2年」「佐藤太郎_4年(2)」→「佐藤太郎」として照合
+  // ─────────────────────────────────────────────────────────────────
+  NAME_SUFFIX_PATTERN: /_\\d+年(\\(\\d+\\))?$/,  // _1年, _2年, _4年(2) などにマッチ
+  
+  // ─────────────────────────────────────────────────────────────────
+  // リマインド設定
+  // ─────────────────────────────────────────────────────────────────
+  DAYS_BEFORE: ${daysBefore},                   // 何日前にリマインドするか（1=前日）
+  SEND_HOUR: ${sendHour},                    // 何時に送信するか（0-23、${sendHour}時）
+  
+  // ─────────────────────────────────────────────────────────────────
+  // メール設定
+  // ─────────────────────────────────────────────────────────────────
+  SUBJECT: '${escapeString(emailSubject)}',
+  LABEL_NAME: '${escapeString(labelName)}',   // Gmailに付けるラベル名
+  
+  // ─────────────────────────────────────────────────────────────────
+  // 添付ファイル設定
+  // スプレッドシートと同じフォルダにあるPDFを添付
+  // ファイル名の末尾が一致するファイルを検索
+  // 添付しない場合は '' （空文字列）に設定
+  // ─────────────────────────────────────────────────────────────────
+  ATTACHMENT_FILENAME: '${escapeString(attachmentFilename)}',
+};
+
+// ─────────────────────────────────────────────────────────────────
+// 列名変換ヘルパー（A→0, B→1, C→2, ... AA→26, AB→27, ...）
+// ─────────────────────────────────────────────────────────────────
+function colToIndex(colLetter) {
+  const col = colLetter.toUpperCase();
+  let index = 0;
+  for (let i = 0; i < col.length; i++) {
+    index = index * 26 + (col.charCodeAt(i) - 64);
+  }
+  return index - 1; // 0始まりのインデックスに変換
+}
+
+// ==================== メイン処理 ====================
+
+/**
+ * リマインドメールを送信するメイン関数
+ * トリガーからこの関数を呼び出す
+ */
+function sendReminders() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // 各シートを取得
+  const shiftSheet = ss.getSheetByName(CONFIG.SHIFT_SHEET_NAME);
+  const surveySheet = ss.getSheetByName(CONFIG.SURVEY_SHEET_NAME);
+  let logSheet = ss.getSheetByName(CONFIG.LOG_SHEET_NAME);
+  
+  // シートの存在チェック
+  if (!shiftSheet) {
+    Logger.log('エラー: シフト結果シートが見つかりません');
+    return;
+  }
+  if (!surveySheet) {
+    Logger.log('エラー: アンケート回答シートが見つかりません');
+    return;
+  }
+  
+  // 送信ログシートがなければ作成
+  if (!logSheet) {
+    logSheet = createLogSheet(ss);
+  }
+  
+  // 明日の日付を取得
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + CONFIG.DAYS_BEFORE);
+  const tomorrowStr = formatDate(tomorrow);
+  
+  Logger.log(\`対象日付: \${tomorrowStr}\`);
+  
+  // シフトデータから明日の担当者を抽出
+  const assignments = getTomorrowAssignments(shiftSheet, tomorrow);
+  Logger.log(\`明日の担当者数: \${assignments.length}\`);
+  
+  if (assignments.length === 0) {
+    Logger.log('明日の担当者はいません');
+    return;
+  }
+  
+  // メールアドレスマップを作成
+  const emailMap = createEmailMap(surveySheet);
+  
+  // ラベルを取得または作成
+  const label = getOrCreateLabel(CONFIG.LABEL_NAME);
+  
+  // 各担当者にメール送信
+  let sentCount = 0;
+  for (const assignment of assignments) {
+    // シフト結果の氏名からサフィックスを除去して照合
+    const nameForLookup = stripNameSuffix(assignment.name);
+    const email = emailMap[normalizeString(nameForLookup)];
+    
+    if (!email) {
+      Logger.log(\`警告: \${assignment.name} のメールアドレスが見つかりません\`);
+      logToSheet(logSheet, tomorrowStr, assignment.name, assignment.location, '', '送信失敗: メールアドレス不明');
+      continue;
+    }
+    
+    // 二重送信チェック
+    if (isAlreadySent(logSheet, tomorrowStr, email)) {
+      Logger.log(\`スキップ: \${assignment.name} には既に送信済み\`);
+      continue;
+    }
+    
+    // メール送信
+    try {
+      sendReminderEmail(email, assignment, label);
+      logToSheet(logSheet, tomorrowStr, assignment.name, assignment.location, email, '送信成功');
+      sentCount++;
+      Logger.log(\`送信完了: \${assignment.name} (\${email})\`);
+    } catch (e) {
+      Logger.log(\`エラー: \${assignment.name} への送信失敗 - \${e.message}\`);
+      logToSheet(logSheet, tomorrowStr, assignment.name, assignment.location, email, \`送信失敗: \${e.message}\`);
+    }
+  }
+  
+  Logger.log(\`送信完了: \${sentCount}件\`);
+}
+
+// ==================== ヘルパー関数 ====================
+
+/**
+ * 明日のシフト担当者を取得（横持ち形式対応）
+ * シート構造: A列=日付, B列=曜日, C列以降=地点（ヘッダー行に地点名）
+ * 地点の終了列はヘッダー行から自動検出
+ */
+function getTomorrowAssignments(sheet, targetDate) {
+  const data = sheet.getDataRange().getValues();
+  const assignments = [];
+  
+  // ヘッダー行から地点名を取得（空でない列まで）
+  const headerRow = data[0];
+  const locationNames = [];
+  const startCol = colToIndex(CONFIG.SHIFT_LOCATION_START_COL);
+  
+  // ヘッダー行を走査して地点を収集
+  for (let col = startCol; col < headerRow.length; col++) {
+    const cellValue = headerRow[col];
+    if (cellValue && String(cellValue).trim()) {
+      locationNames.push(String(cellValue).trim());
+    } else {
+      // 空セルに到達したら終了
+      break;
+    }
+  }
+  
+  Logger.log(\`検出した地点数: \${locationNames.length} (\${locationNames.join(', ')})\`);
+  
+  // 各行をチェック
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const dateValue = row[colToIndex(CONFIG.SHIFT_DATE_COL)];
+    
+    if (!dateValue) continue;
+    
+    // 日付を比較
+    const shiftDate = new Date(dateValue);
+    if (isSameDate(shiftDate, targetDate)) {
+      // この日付の行の各地点をチェック
+      for (let j = 0; j < locationNames.length; j++) {
+        const col = startCol + j;
+        const name = row[col];
+        if (name && String(name).trim()) {
+          // カンマ区切りで複数名いる場合は分割
+          const names = String(name).split(/[,、]/);
+          for (const n of names) {
+            if (n.trim()) {
+              assignments.push({
+                date: formatDate(targetDate),
+                location: locationNames[j],
+                name: n.trim()
+              });
+            }
+          }
+        }
+      }
+      break; // 対象日付が見つかったらループ終了
+    }
+  }
+  
+  return assignments;
+}
+
+/**
+ * メールアドレスマップを作成（氏名 -> メールアドレス）
+ */
+function createEmailMap(sheet) {
+  const data = sheet.getDataRange().getValues();
+  const map = {};
+  
+  for (let i = 1; i < data.length; i++) { // ヘッダー行をスキップ
+    const row = data[i];
+    const email = row[colToIndex(CONFIG.SURVEY_EMAIL_COL)];
+    const name = row[colToIndex(CONFIG.SURVEY_NAME_COL)];
+    
+    if (email && name) {
+      map[normalizeString(name)] = email;
+    }
+  }
+  
+  return map;
+}
+
+/**
+ * リマインドメールを送信
+ */
+function sendReminderEmail(email, assignment, label) {
+  const body = \`
+${bodyCode}
+\`;
+
+  // 添付ファイルを取得
+  const attachment = getAttachmentFile();
+  
+  // メール送信オプション
+  const options = {};
+  if (attachment) {
+    options.attachments = [attachment];
+  }
+  
+  // メール送信
+  GmailApp.sendEmail(email, CONFIG.SUBJECT, body, options);
+  
+  // 送信済みメールにラベルを付けてアーカイブ
+  Utilities.sleep(2000); // 送信が完了するまで少し待機
+  
+  const threads = GmailApp.search(\`to:\${email} subject:"\${CONFIG.SUBJECT}" newer_than:1d\`, 0, 1);
+  if (threads.length > 0) {
+    const thread = threads[0];
+    thread.addLabel(label);
+    thread.moveToArchive();
+  }
+}
+
+/**
+ * 添付ファイルを取得（スプレッドシートと同じフォルダから）
+ * ファイル名の末尾が一致するファイルを検索
+ */
+function getAttachmentFile() {
+  // 添付ファイル名が設定されていない場合はスキップ
+  if (!CONFIG.ATTACHMENT_FILENAME) {
+    return null;
+  }
+  
+  try {
+    // スプレッドシートの親フォルダを取得
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ssFile = DriveApp.getFileById(ss.getId());
+    const parents = ssFile.getParents();
+    
+    if (!parents.hasNext()) {
+      Logger.log('警告: スプレッドシートの親フォルダが見つかりません');
+      return null;
+    }
+    
+    const folder = parents.next();
+    
+    // フォルダ内の全ファイルを走査し、末尾が一致するファイルを検索
+    const allFiles = folder.getFiles();
+    let foundFile = null;
+    
+    while (allFiles.hasNext()) {
+      const file = allFiles.next();
+      const fileName = file.getName();
+      
+      // ファイル名の末尾が設定値と一致するかチェック
+      if (fileName.endsWith(CONFIG.ATTACHMENT_FILENAME)) {
+        foundFile = file;
+        break;
+      }
+    }
+    
+    if (!foundFile) {
+      Logger.log(\`警告: "*\${CONFIG.ATTACHMENT_FILENAME}" に一致する添付ファイルが見つかりません\`);
+      return null;
+    }
+    
+    Logger.log(\`添付ファイル: \${foundFile.getName()}\`);
+    return foundFile.getBlob();
+    
+  } catch (e) {
+    Logger.log(\`添付ファイル取得エラー: \${e.message}\`);
+    return null;
+  }
+}
+
+/**
+ * ラベルを取得または作成
+ */
+function getOrCreateLabel(labelName) {
+  let label = GmailApp.getUserLabelByName(labelName);
+  if (!label) {
+    label = GmailApp.createLabel(labelName);
+  }
+  return label;
+}
+
+/**
+ * 送信ログシートを作成
+ */
+function createLogSheet(ss) {
+  const sheet = ss.insertSheet(CONFIG.LOG_SHEET_NAME);
+  sheet.appendRow(['送信日時', '担当日', '担当者名', '場所', 'メールアドレス', 'ステータス']);
+  
+  // ヘッダー行の書式設定
+  const headerRange = sheet.getRange(1, 1, 1, 6);
+  headerRange.setBackground('#4a86e8');
+  headerRange.setFontColor('white');
+  headerRange.setFontWeight('bold');
+  
+  return sheet;
+}
+
+/**
+ * 送信ログに記録
+ */
+function logToSheet(sheet, targetDate, name, location, email, status) {
+  sheet.appendRow([
+    new Date(),
+    targetDate,
+    name,
+    location,
+    email,
+    status
+  ]);
+}
+
+/**
+ * 既に送信済みかチェック
+ */
+function isAlreadySent(sheet, targetDate, email) {
+  const data = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (row[1] === targetDate && row[4] === email && row[5] === '送信成功') {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+/**
+ * 日付をYYYY/MM/DD形式にフォーマット
+ */
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return \`\${year}/\${month}/\${day}\`;
+}
+
+/**
+ * 同じ日付かどうかをチェック
+ */
+function isSameDate(date1, date2) {
+  return date1.getFullYear() === date2.getFullYear() &&
+         date1.getMonth() === date2.getMonth() &&
+         date1.getDate() === date2.getDate();
+}
+
+/**
+ * 氏名からサフィックス（_2年など）を除去
+ * CONFIG.NAME_SUFFIX_PATTERN に設定されたパターンを使用
+ */
+function stripNameSuffix(name) {
+  if (!name) return '';
+  return String(name).replace(CONFIG.NAME_SUFFIX_PATTERN, '');
+}
+
+/**
+ * 文字列を正規化（空白削除、全角半角統一）
+ */
+function normalizeString(str) {
+  if (!str) return '';
+  return String(str)
+    .trim()
+    .replace(/\\s+/g, '')
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
+}
+
+// ==================== セットアップ関数 ====================
+
+/**
+ * 毎日のトリガーを設定
+ */
+function createDailyTrigger() {
+  // 既存のトリガーを削除
+  const triggers = ScriptApp.getProjectTriggers();
+  for (const trigger of triggers) {
+    if (trigger.getHandlerFunction() === 'sendReminders') {
+      ScriptApp.deleteTrigger(trigger);
+    }
+  }
+  
+  // 新しいトリガーを作成
+  ScriptApp.newTrigger('sendReminders')
+    .timeBased()
+    .atHour(CONFIG.SEND_HOUR)
+    .everyDays(1)
+    .create();
+  
+  Logger.log(\`トリガーを設定しました: 毎日 \${CONFIG.SEND_HOUR}時に実行\`);
+}
+
+/**
+ * 🗑️ 毎日のトリガーを削除（自動送信を停止）
+ */
+function deleteDailyTrigger() {
+  const triggers = ScriptApp.getProjectTriggers();
+  let deletedCount = 0;
+  
+  for (const trigger of triggers) {
+    if (trigger.getHandlerFunction() === 'sendReminders') {
+      ScriptApp.deleteTrigger(trigger);
+      deletedCount++;
+    }
+  }
+  
+  if (deletedCount > 0) {
+    Logger.log(\`\${deletedCount}件のトリガーを削除しました。自動送信は停止されました。\`);
+  } else {
+    Logger.log('削除するトリガーはありませんでした。');
+  }
+}
+
+/**
+ * テスト送信（今日の担当者にテストメール送信）
+ */
+function testSendReminders() {
+  // 設定を一時的に変更してテスト
+  CONFIG.DAYS_BEFORE = 0; // 今日の担当者を対象
+  sendReminders();
+}
+
+// ==================== シミュレーション ====================
+
+/**
+ * 🔍 シミュレーション実行（メール送信なし）
+ * 
+ * 実際にメールを送信せずに、以下を確認できます：
+ * - シフトデータの読み取り
+ * - メールアドレスの照合
+ * - 送信対象者の一覧
+ * 
+ * 結果は「表示」→「ログ」で確認してください
+ */
+function simulateReminders() {
+  simulateForDate(CONFIG.DAYS_BEFORE);
+}
+
+/**
+ * 🔍 特定日付でシミュレーション
+ * @param {number} daysFromToday - 今日から何日後（0=今日、1=明日、-1=昨日）
+ */
+function simulateForDate(daysFromToday) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  Logger.log('════════════════════════════════════════════════════════');
+  Logger.log('📧 リマインドメール シミュレーション（メール送信なし）');
+  Logger.log('════════════════════════════════════════════════════════');
+  
+  // シートを取得
+  const shiftSheet = ss.getSheetByName(CONFIG.SHIFT_SHEET_NAME);
+  const surveySheet = ss.getSheetByName(CONFIG.SURVEY_SHEET_NAME);
+  
+  if (!shiftSheet) {
+    Logger.log(\`❌ エラー: "\${CONFIG.SHIFT_SHEET_NAME}" シートが見つかりません\`);
+    return;
+  }
+  if (!surveySheet) {
+    Logger.log(\`❌ エラー: "\${CONFIG.SURVEY_SHEET_NAME}" シートが見つかりません\`);
+    return;
+  }
+  
+  Logger.log(\`✅ シフト結果シート: \${CONFIG.SHIFT_SHEET_NAME}\`);
+  Logger.log(\`✅ アンケート回答シート: \${CONFIG.SURVEY_SHEET_NAME}\`);
+  
+  // 対象日付を計算
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + daysFromToday);
+  const targetDateStr = formatDate(targetDate);
+  
+  Logger.log('');
+  Logger.log(\`📅 対象日付: \${targetDateStr}（今日から\${daysFromToday}日後）\`);
+  Logger.log('');
+  
+  // シフトデータから担当者を抽出
+  const assignments = getTomorrowAssignments(shiftSheet, targetDate);
+  
+  if (assignments.length === 0) {
+    Logger.log('⚠️ この日の担当者は見つかりませんでした');
+    return;
+  }
+  
+  Logger.log(\`👥 担当者数: \${assignments.length}人\`);
+  Logger.log('');
+  
+  // メールアドレスマップを作成
+  const emailMap = createEmailMap(surveySheet);
+  Logger.log(\`📋 アンケート回答から取得したメールアドレス数: \${Object.keys(emailMap).length}件\`);
+  Logger.log('');
+  
+  // 各担当者の照合結果を表示
+  Logger.log('────────────────────────────────────────────────────────');
+  Logger.log('照合結果:');
+  Logger.log('────────────────────────────────────────────────────────');
+  
+  let matchCount = 0;
+  let noMatchCount = 0;
+  
+  for (const assignment of assignments) {
+    const originalName = assignment.name;
+    const nameForLookup = stripNameSuffix(originalName);
+    const normalizedName = normalizeString(nameForLookup);
+    const email = emailMap[normalizedName];
+    
+    if (email) {
+      Logger.log(\`✅ \${originalName}\`);
+      Logger.log(\`   → 照合名: "\${nameForLookup}" → メール: \${email}\`);
+      Logger.log(\`   → 場所: \${assignment.location}\`);
+      matchCount++;
+    } else {
+      Logger.log(\`❌ \${originalName}\`);
+      Logger.log(\`   → 照合名: "\${nameForLookup}" → メールアドレス不明\`);
+      Logger.log(\`   → 場所: \${assignment.location}\`);
+      noMatchCount++;
+    }
+    Logger.log('');
+  }
+  
+  // サマリー
+  Logger.log('════════════════════════════════════════════════════════');
+  Logger.log('📊 シミュレーション結果サマリー');
+  Logger.log('════════════════════════════════════════════════════════');
+  Logger.log(\`対象日付: \${targetDateStr}\`);
+  Logger.log(\`担当者数: \${assignments.length}人\`);
+  Logger.log(\`  ✅ メール送信可能: \${matchCount}人\`);
+  Logger.log(\`  ❌ メールアドレス不明: \${noMatchCount}人\`);
+  Logger.log('');
+  Logger.log('※ このシミュレーションではメールは送信されていません');
+  Logger.log('※ 結果を確認後、問題なければ createDailyTrigger() でトリガーを設定してください');
+}
+
+/**
+ * 🔍 明日のシミュレーション
+ */
+function simulateTomorrow() {
+  simulateForDate(1);
+}
+
+/**
+ * 🔍 今日のシミュレーション
+ */
+function simulateToday() {
+  simulateForDate(0);
+}
+`;
+
+            document.getElementById('generatedCode').textContent = code;
+            document.getElementById('codeOutput').style.display = 'block';
+
+            // 生成後にスクロール
+            document.getElementById('codeOutput').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 文字列エスケープ
+        function escapeString(str) {
+            return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        }
+
+        // コードをコピー
+        function copyCode() {
+            const code = document.getElementById('generatedCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = '✅ コピーしました';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 コピー';
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                alert('コピーに失敗しました: ' + err);
+            });
+        }
+    </script>
+</body>
+
+</html>
